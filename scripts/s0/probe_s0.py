@@ -260,10 +260,10 @@ def main():
     print(f"pairs within {PAIR_RADIUS_M} m: {len(close)}; same CRAFT_ID: {int(close.same_id.sum())}")
     mis = close[~close.same_id]
     print("mismatches (L_jul, L_aug):", list(zip(mis.L_jul.astype(int), mis.L_aug.astype(int))))
-    print(f"min L_jul among mismatches: {mis.L_jul.min() if len(mis) else 'n/a'}; "
-          f"min L_jul among matched pairs with L >= 50 m: {close[close.same_id & (close.L_jul >= 50)].L_jul.min()}")
-    print(f"matched pairs with L_jul >= 50 m: {int((close.same_id & (close.L_jul >= 50)).sum())}; "
-          f"mismatches with L_jul >= 50 m: {int((~close.same_id & (close.L_jul >= 50)).sum())}")
+    lmax = mis.L_jul.max() if len(mis) else np.nan
+    print(f"max L_jul among mismatches: {lmax}; matched pairs with L_jul > that: "
+          f"{int((close.same_id & (close.L_jul > lmax)).sum())}; mismatches with L_jul > that: 0 by construction")
+    print(f"smallest L_jul among matched pairs above that: {close[close.same_id & (close.L_jul > lmax)].L_jul.min()}")
     print("matched pairs with identical L/B:", int((close.same_id & (close.L_jul == close.L_aug)
                                                     & (close.B_jul == close.B_aug)).sum()))
 

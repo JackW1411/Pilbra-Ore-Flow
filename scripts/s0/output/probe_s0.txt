@@ -205,6 +205,6 @@ box vessels Jul 449, Aug 457, IDs in both 284
 stationary (SOG < 0.5) at boundary: Jul-side 113, Aug-side 108
 pairs within 200 m: 112; same CRAFT_ID: 105
 mismatches (L_jul, L_aug): [(18, 17), (12, 53), (24, 20), (32, 28), (32, 30), (32, 30), (10, 28)]
-min L_jul among mismatches: 10.0; min L_jul among matched pairs with L >= 50 m: 53.0
-matched pairs with L_jul >= 50 m: 71; mismatches with L_jul >= 50 m: 0
+max L_jul among mismatches: 32.0; matched pairs with L_jul > that: 74; mismatches with L_jul > that: 0 by construction
+smallest L_jul among matched pairs above that: 35.0
 matched pairs with identical L/B: 105

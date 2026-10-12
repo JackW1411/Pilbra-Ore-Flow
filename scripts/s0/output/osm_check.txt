@@ -1,0 +1,94 @@
+checked 2026-10-12 06:54 UTC  source https://overpass-api.de/api/interpreter
+bbox (S,W,N,E) (-20.42, 118.35, -19.9, 118.76); filters ['["man_made"="pier"]', '["man_made"="quay"]', '["man_made"="breakwater"]', '["seamark:type"="berth"]', '["seamark:type"="mooring"]', '["seamark:type"="harbour"]', '["seamark:type"="anchorage"]', '["seamark:type"="anchor_berth"]', '["harbour"]', '["mooring"]', '["waterway"="dock"]', '["landuse"="port"]', '["industrial"="port"]']
+failed endpoints before success: none
+
+[O1] elements returned: 83 by type {'node': 1, 'way': 81, 'relation': 1}
+  man_made: {'pier': 53, 'breakwater': 6}
+  seamark:type: {'berth': 19, 'harbour': 1}
+  landuse: {'industrial': 3, 'construction': 1}
+  industrial: {'port': 4}
+
+[O2] elements (type/id, selected tags)
+  relation/17908017: {'landuse': 'industrial', 'industrial': 'port', 'name': 'Herb Elliott Port', 'operator': 'Fortescue Metal Group'}
+  way/333934367: {'landuse': 'industrial', 'industrial': 'port', 'name': 'BHP Nelson Point Port', 'operator': 'BHP Billiton', '_shape': 'closed, 112 nodes'}
+  way/341471088: {'landuse': 'construction', 'industrial': 'port', 'name': 'Lumsden Point', '_shape': 'closed, 99 nodes'}
+  way/1302538249: {'landuse': 'industrial', 'industrial': 'port', 'name': 'BHP Western Stockyard', 'operator': 'BHP Billiton', '_shape': 'closed, 159 nodes'}
+  way/388353127: {'seamark:type': 'berth', 'name': 'A', 'operator': 'BHP Billiton', '_shape': 'closed, 5 nodes'}
+  way/388353128: {'seamark:type': 'berth', 'name': 'B', 'operator': 'BHP Billiton', '_shape': 'closed, 5 nodes'}
+  way/388652000: {'seamark:type': 'berth', 'name': 'AP1', '_shape': 'closed, 5 nodes'}
+  way/388652002: {'seamark:type': 'berth', 'name': 'AP2', '_shape': 'closed, 5 nodes'}
+  way/388652004: {'seamark:type': 'berth', 'name': 'AP3', '_shape': 'closed, 5 nodes'}
+  way/388652006: {'seamark:type': 'berth', 'name': 'AP4', '_shape': 'closed, 5 nodes'}
+  way/388652009: {'seamark:type': 'berth', 'name': 'AP5', '_shape': 'closed, 5 nodes'}
+  way/388652011: {'seamark:type': 'berth', 'name': 'C', 'operator': 'BHP Billiton', '_shape': 'closed, 5 nodes'}
+  way/388652013: {'seamark:type': 'berth', 'name': 'D', 'operator': 'BHP Billiton', '_shape': 'closed, 5 nodes'}
+  way/388652016: {'seamark:type': 'berth', 'name': 'G', 'operator': 'BHP Billiton', '_shape': 'closed, 5 nodes'}
+  way/388652019: {'seamark:type': 'berth', 'name': 'H', 'operator': 'BHP Billiton', '_shape': 'closed, 5 nodes'}
+  way/388652021: {'seamark:type': 'berth', 'name': 'PH 1', 'operator': 'Port Hedland Port Authority', '_shape': 'closed, 5 nodes'}
+  way/388652024: {'seamark:type': 'berth', 'name': 'PH 2', 'operator': 'Port Hedland Port Authority', '_shape': 'closed, 5 nodes'}
+  way/388652026: {'seamark:type': 'berth', 'name': 'PH 3', 'operator': 'Port Hedland Port Authority', '_shape': 'closed, 5 nodes'}
+  way/388652028: {'seamark:type': 'berth', 'name': 'PH 4', 'operator': 'Port Hedland Port Authority', '_shape': 'closed, 5 nodes'}
+  way/388652029: {'seamark:type': 'berth', 'name': 'SP1', 'operator': 'Port Hedland Port Authority', '_shape': 'closed, 5 nodes'}
+  way/388652030: {'seamark:type': 'berth', 'name': 'SP2', 'operator': 'Port Hedland Port Authority', '_shape': 'closed, 5 nodes'}
+  way/388761296: {'seamark:type': 'berth', 'name': 'E', 'operator': 'BHP Billiton', '_shape': 'closed, 5 nodes'}
+  way/388761297: {'seamark:type': 'berth', 'name': 'F', 'operator': 'BHP Billiton', '_shape': 'closed, 5 nodes'}
+  node/13533267393: {'seamark:type': 'harbour', 'name': 'Spoilbank Marina', 'operator': 'Transport WA'}
+  way/1303248267: {'man_made': 'breakwater', '_shape': 'closed, 51 nodes'}
+  way/1303248268: {'man_made': 'breakwater', '_shape': 'closed, 46 nodes'}
+  way/1305549797: {'man_made': 'breakwater', '_shape': 'closed, 8 nodes'}
+  way/1305549817: {'man_made': 'breakwater', '_shape': 'open line, 4 nodes'}
+  way/1305549818: {'man_made': 'breakwater', '_shape': 'open line, 3 nodes'}
+  way/1305549819: {'man_made': 'breakwater', '_shape': 'closed, 103 nodes'}
+  way/333931026: {'man_made': 'pier', '_shape': 'closed, 18 nodes'}
+  way/333931027: {'man_made': 'pier', '_shape': 'closed, 10 nodes'}
+  way/333931028: {'man_made': 'pier', '_shape': 'closed, 10 nodes'}
+  way/333931029: {'man_made': 'pier', '_shape': 'closed, 21 nodes'}
+  way/333931096: {'man_made': 'pier', 'name': 'Nelson Point', 'operator': 'BHP Billiton', '_shape': 'closed, 18 nodes'}
+  way/333931388: {'man_made': 'pier', '_shape': 'closed, 24 nodes'}
+  way/333931403: {'man_made': 'pier', '_shape': 'closed, 10 nodes'}
+  way/333931404: {'man_made': 'pier', '_shape': 'open line, 7 nodes'}
+  way/333931407: {'man_made': 'pier', '_shape': 'closed, 9 nodes'}
+  way/333932203: {'man_made': 'pier', 'name': 'Anderson Point Pier', '_shape': 'closed, 44 nodes'}
+  way/333933952: {'man_made': 'pier', 'name': 'PHPA1/2', '_shape': 'closed, 30 nodes'}
+  way/333933953: {'man_made': 'pier', 'name': 'PHPA3', '_shape': 'closed, 9 nodes'}
+  way/333933956: {'man_made': 'pier', 'name': 'Nelson Point', 'operator': 'BHP Billiton', '_shape': 'closed, 26 nodes'}
+  way/334801381: {'man_made': 'pier', 'name': 'PHPA4', '_shape': 'closed, 13 nodes'}
+  way/1073363833: {'man_made': 'pier', '_shape': 'open line, 4 nodes'}
+  way/1112638363: {'man_made': 'pier', 'name': 'Stanley Point Pier', '_shape': 'closed, 15 nodes'}
+  way/1112638364: {'man_made': 'pier', '_shape': 'closed, 12 nodes'}
+  way/1303248252: {'man_made': 'pier', '_shape': 'open line, 2 nodes'}
+  way/1303248253: {'man_made': 'pier', '_shape': 'open line, 2 nodes'}
+  way/1303248254: {'man_made': 'pier', '_shape': 'open line, 2 nodes'}
+  way/1303248255: {'man_made': 'pier', '_shape': 'open line, 2 nodes'}
+  way/1303248256: {'man_made': 'pier', '_shape': 'open line, 2 nodes'}
+  way/1303248257: {'man_made': 'pier', '_shape': 'open line, 2 nodes'}
+  way/1303248258: {'man_made': 'pier', '_shape': 'open line, 2 nodes'}
+  way/1303248259: {'man_made': 'pier', '_shape': 'open line, 2 nodes'}
+  way/1303248260: {'man_made': 'pier', '_shape': 'open line, 2 nodes'}
+  way/1303248261: {'man_made': 'pier', '_shape': 'open line, 2 nodes'}
+  way/1303248262: {'man_made': 'pier', '_shape': 'open line, 2 nodes'}
+  way/1303248263: {'man_made': 'pier', '_shape': 'open line, 3 nodes'}
+  way/1303248264: {'man_made': 'pier', '_shape': 'open line, 3 nodes'}
+  way/1303248266: {'man_made': 'pier', '_shape': 'open line, 15 nodes'}
+  way/1305549812: {'man_made': 'pier', '_shape': 'open line, 3 nodes'}
+  way/1305549813: {'man_made': 'pier', '_shape': 'open line, 3 nodes'}
+  way/1305549814: {'man_made': 'pier', '_shape': 'open line, 3 nodes'}
+  way/1305549815: {'man_made': 'pier', '_shape': 'open line, 3 nodes'}
+  way/1305549816: {'man_made': 'pier', '_shape': 'open line, 3 nodes'}
+  way/1305607692: {'man_made': 'pier', '_shape': 'open line, 2 nodes'}
+  way/1305607693: {'man_made': 'pier', '_shape': 'open line, 2 nodes'}
+  way/1305607694: {'man_made': 'pier', '_shape': 'open line, 2 nodes'}
+  way/1305607695: {'man_made': 'pier', '_shape': 'open line, 2 nodes'}
+  way/1305607696: {'man_made': 'pier', '_shape': 'open line, 7 nodes'}
+  way/1305607700: {'man_made': 'pier', '_shape': 'open line, 2 nodes'}
+  way/1305936351: {'man_made': 'pier', '_shape': 'closed, 9 nodes'}
+  way/1305975418: {'man_made': 'pier', '_shape': 'open line, 3 nodes'}
+  way/1305975419: {'man_made': 'pier', '_shape': 'open line, 2 nodes'}
+  way/1305975420: {'man_made': 'pier', '_shape': 'open line, 2 nodes'}
+  way/1310425452: {'man_made': 'pier', '_shape': 'open line, 2 nodes'}
+  way/1310425453: {'man_made': 'pier', '_shape': 'open line, 2 nodes'}
+  way/1310425454: {'man_made': 'pier', '_shape': 'open line, 2 nodes'}
+  way/1310425455: {'man_made': 'pier', '_shape': 'open line, 2 nodes'}
+  way/1310425456: {'man_made': 'pier', '_shape': 'open line, 2 nodes'}
+  way/1310425457: {'man_made': 'pier', '_shape': 'open line, 2 nodes'}
+  way/1475168525: {'man_made': 'pier', '_shape': 'open line, 3 nodes'}

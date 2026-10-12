@@ -1,0 +1,38 @@
+==== PROVISIONAL GATE PROXY, ALL DEPARTURES, NOT THE S0 GATE
+port limit: SLIP LGATE-243 Port Authorities, objectid 12 'PORT HEDLAND PORT AUTHORITY' (data/raw/slip_lgate243/port_hedland_port_authority.geojson, EPSG:7844); equivalence to handbook §4.3 [Unverified]
+params: {'min_modal_length_m': 150, 'type_class': 'cargo', 'stationary_kn': 0.5, 'reentry_hours': 6, 'crossing_gap_min': 60, 'final_pings': [1, 4]}; aggregation timezone Australia/Perth; geometric tests in EPSG:7850
+AIS rows 1885006 (2026-07..2026-08), TS 2026-07-01 00:00:05 -> 2026-08-31 23:59:50 (taken as UTC)
+
+[G1] inside runs (all vessels): 1933; vessels ever inside: 583
+  runs by non-eligible vessels (context, not in proxy): 1298
+    TYPE_CLASS != cargo: 1277; cargo but unclassified_size: 2; cargo, sized, modal L < 150 m: 19
+
+[G2] eligible-vessel inside runs: 635 (vessels 425)
+  exclusions (first applicable reason):
+EXCLUDED
+-- kept as departure                     501
+transit (no inside ping < 0.5 kn)         95
+no exit observed (inside at data end)     35
+re-entry within 6 h (not a departure)      4
+
+[G3] departures: 501 (vessels 392)
+  flagged ais_gap at crossing (gap > 60 min, kept, reported): 0/501 (0.0%)
+  re-entry check incomplete (exit < 6 h before data end, kept): 3
+  inside run began at the vessel's first ping in the data (arrival before 2026-07-01, kept): 32
+  crossing gap minutes: {'count': 501.0, 'mean': 15.8, 'std': 3.6, 'min': 4.8, '50%': 15.0, '95%': 23.4, 'max': 45.0}
+
+[G4] provisional gate proxy, all departures, not the S0 gate
+  draught > 0 in last 1 inside ping(s): 498/501 (99.4%)  | excl. ais_gap: 498/501 (99.4%)
+  draught > 0 in last 4 inside ping(s): 501/501 (100.0%)  | excl. ais_gap: 501/501 (100.0%)
+  last inside ping draught == 0: 3; NaN: 0
+  Note: draught > 0 does not show the value was updated after loading (static_draught not tested here).
+
+[G5] by month of exit (FIRST_OUT), UTC and Australia/Perth
+  MONTH_UTC 2026-07: departures 238, draught > 0 in last ping 235/238 (98.7%)
+  MONTH_UTC 2026-08: departures 263, draught > 0 in last ping 263/263 (100.0%)
+  MONTH_LOCAL 2026-07: departures 236, draught > 0 in last ping 233/236 (98.7%)
+  MONTH_LOCAL 2026-08: departures 261, draught > 0 in last ping 261/261 (100.0%)
+  MONTH_LOCAL 2026-09: departures 4, draught > 0 in last ping 4/4 (100.0%)
+  local data coverage 2026-07-01 08:00:05+08:00 -> 2026-09-01 07:59:50+08:00: local 2026-07 misses its first 8.0 h; local month after 2026-08 holds only 8.0 h. Partial local months are incomplete, not comparable.
+
+per-crossing table (gitignored): data\interim\s0_gate_proxy_crossings.csv

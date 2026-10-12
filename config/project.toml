@@ -1,0 +1,28 @@
+# Project configuration. Read by scripts/s0/*; later by src/pilbara_oreflow/config.
+
+[crs]
+distance = "EPSG:7850"          # GDA2020 / MGA zone 50 (Fixed decision). All geometric tests run here.
+ais_input = "EPSG:4326"         # AMSA shapefile .prj (P1)
+
+[aggregation]
+# Timezone used to assign events to days/weeks/months. AMSA timestamps are taken as UTC (P3, [Unverified]).
+# Whether PPA monthly statistics use local (AWST) months is [Unverified].
+timezone = "Australia/Perth"
+
+[port_limit]
+# Working port limit, adopted 2026-10-12 (Jack). Equivalence to PPA handbook §4.3 is [Unverified].
+# Geometry is NOT committed (licence "Custom (Other)" unread). Fetch with scripts/s0/fetch_port_limit.py.
+source = "SLIP LGATE-243 Port Authorities, objectid 12 'PORT HEDLAND PORT AUTHORITY'"
+url = "https://public-services.slip.wa.gov.au/public/rest/services/SLIP_Public_Services/Boundaries/MapServer/12"
+objectid = 12
+path = "data/raw/slip_lgate243/port_hedland_port_authority.geojson"
+crs = "EPSG:7844"               # GDA2020 geographic, as requested from the service (outSR)
+
+[s0_gate_proxy]
+# Provisional probe parameters. Not the model's thresholds; not tuned.
+min_modal_length_m = 150
+type_class = "cargo"
+stationary_kn = 0.5             # an inside run needs >= 1 ping below this, else "transit"
+reentry_hours = 6               # exit followed by re-entry within this -> not a departure
+crossing_gap_min = 60           # last-inside to first-outside gap above this -> ais_gap
+final_pings = [1, 4]            # K values: draught > 0 in last ping / any of last K inside pings

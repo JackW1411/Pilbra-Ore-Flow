@@ -46,7 +46,9 @@ Fails only the last test -> ship the call-count version and say so. Timebox: 4 w
 
 ## Open items (verify, do not assume)
 - AMSA release lag (partial, see STATUS.md); PPA berth-level granularity; PPA data licence (AMSA licence resolved, see STATUS.md log).
-- [Unverified] Berth and port-limit polygon source. PPA handbook gives no coordinates (§4.3, §6.13-6.24); SLIP LGATE-243 has a gazetted port authority polygon (licence unread); no public berth layer found. Remaining candidates: AHO AUS 53 / ENC PT613, or digitised from imagery with the method documented. Do not invent polygons. Blocks S0 coverage. See STATUS.md "Boundary sources".
+- [Unverified] Berth polygon source. PPA handbook gives no coordinates (§6.13-6.24). Candidates: OSM `seamark:type=berth` (19 named polygons, ODbL, naming/accuracy unverified), AHO AUS 53 / ENC PT613, or digitised from imagery with the method documented. Do not invent polygons. Blocks the S0 gate. See STATUS.md "Boundary sources".
+- [Unverified] Port limit: working limit is SLIP LGATE-243 (adopted 2026-10-12); equivalence to handbook §4.3 and the LGATE-243 licence terms are unverified.
+- [Unverified] Whether PPA monthly statistics use local (AWST) or UTC months.
 - [Unverified] Which Hedland berths are multi-user (handbook §6.16 PH4 indicates yes; keyword scan only), and the PPA published cargo/berth list.
 - Cape Lambert jurisdiction and whether PPA publishes its throughput (the "no PPA validation" claim is unverified).
 - Definition of "laden departure" for the S0 coverage denominator that does not depend on draught itself. Hypothesis in `docs/laden_departure.md`; not adopted. Must be fixed before S0 coverage is run.
