@@ -1,0 +1,210 @@
+S0 probe. pandas 3.0.5, pyogrio 0.13.0
+Probe box (NOT a port limit): lon (117.9, 119.3), lat (-20.45, -19.4)
+
+==== [P1] 2026-07: schema and extent (data\raw\sub_2026_07\pt\cts_sub-areas_07_2026_pt\ct_nw_07_2026_pt.shp)
+raw fields: ['craft_id', 'longitude', 'latitude', 'course', 'speed', 'type', 'length', 'beam', 'draught', 'timestamp']
+raw dtypes: ['float64', 'float64', 'float64', 'float64', 'float64', 'object', 'float64', 'float64', 'float64', 'object']
+CRS: EPSG:4326 | features: 892212
+SUBTYPE present: False
+IMO/MMSI-like fields: []
+LON 110.00369..125.44776  LAT -22.98470..-11.71887
+TS range: 2026-07-01 00:00:05 -> 2026-07-31 23:59:36
+
+==== [P1] 2026-08: schema and extent (data\raw\sub_2026_08\pt\cts_sub-areas_08_2026_pt\ct_nw_08_2026_pt.shp)
+raw fields: ['craft_id', 'longitude', 'latitude', 'course', 'speed', 'type', 'length', 'beam', 'draught', 'timestamp']
+raw dtypes: ['float64', 'float64', 'float64', 'float64', 'float64', 'object', 'float64', 'float64', 'float64', 'object']
+CRS: EPSG:4326 | features: 992794
+SUBTYPE present: False
+IMO/MMSI-like fields: []
+LON 110.03101..125.45461  LAT -22.98396..-11.63875
+TS range: 2026-08-01 00:00:20 -> 2026-08-31 23:59:50
+
+==== [P2] timestamp format: AM/PM suffix vs 24-hour value
+2026-07: rows 892212, suffix conflicts 0, rows lost if parsed as 12-hour %I..%p: 443282 (49.68%)
+2026-08: rows 992794, suffix conflicts 0, rows lost if parsed as 12-hour %I..%p: 490008 (49.36%)
+
+==== [P3] timezone heuristic: hour-of-day profile of moving small craft (whole NW area)
+If TIMESTAMP is UTC, local daylight (AWST = UTC+8, 06-18 local) is 22-10 UTC.
+2026-07: moving small-craft rows 17721; share in 22-10 UTC window 62.73% (uniform would be 50%)
+  hour share: 00:0.051 01:0.056 02:0.055 03:0.055 04:0.054 05:0.053 06:0.052 07:0.056 08:0.062 09:0.046 10:0.039 11:0.037 12:0.035 13:0.035 14:0.032 15:0.031 16:0.026 17:0.030 18:0.025 19:0.024 20:0.026 21:0.031 22:0.038 23:0.050
+2026-08: moving small-craft rows 21354; share in 22-10 UTC window 65.92% (uniform would be 50%)
+  hour share: 00:0.060 01:0.058 02:0.056 03:0.058 04:0.059 05:0.057 06:0.055 07:0.056 08:0.056 09:0.046 10:0.038 11:0.033 12:0.033 13:0.031 14:0.030 15:0.026 16:0.024 17:0.026 18:0.024 19:0.022 20:0.024 21:0.030 22:0.043 23:0.056
+
+==== [P4] release-lag evidence from the downloaded packages
+2026-07 outer: cts_sub_areas_monthly_dataset_07_2026_metadata.pdf  zip-mtime (2026, 10, 12, 17, 29, 58)
+  metadata 'Metadata Date': 03/08/2026
+  metadata thinning interval (min): 15
+2026-07 outer: cts_sub-areas_07_2026_pt.zip  zip-mtime (2026, 10, 12, 17, 29, 58)
+  inner: cts_sub-areas_07_2026_pt/ct_nw_07_2026_pt.shp  zip-mtime (2026, 8, 3, 13, 12, 22) (zip times carry no timezone)
+2026-08 outer: cts_sub_areas_monthly_dataset_08_2026_metadata.pdf  zip-mtime (2026, 10, 12, 17, 29, 12)
+  metadata 'Metadata Date': 03/09/2026
+  metadata thinning interval (min): 15
+2026-08 outer: cts_sub-areas_08_2026_pt.zip  zip-mtime (2026, 10, 12, 17, 29, 12)
+  inner: cts_sub-areas_08_2026_pt/ct_nw_08_2026_pt.shp  zip-mtime (2026, 9, 2, 14, 42, 16) (zip times carry no timezone)
+
+==== [P5] 2026-08: TYPE value_counts, whole NW area (rows, distinct CRAFT_ID)
+distinct TYPE values (excl NaN): 44
+                                                                           rows  vessels
+TYPE                                                                                    
+Cargo ship - All                                                         389994      778
+Pleasure craft                                                            26764      114
+Tanker - All                                                              25937       98
+NaN                                                                         219       93
+Port tender                                                               50345       90
+Tug                                                                      204108       87
+Sailing                                                                   27821       57
+Fishing                                                                   38267       52
+Other - All                                                               66037       49
+Cargo ship - No additional info                                           23783       47
+Passenger ship - All                                                      20892       30
+unknown code 0                                                             8565       26
+Cargo ship - Carrying DG, HS, or MP, IMO Hazard or pollutant category A    2439       22
+Tanker - Carrying DG, HS, or MP, IMO Hazard or pollutant category A        7430       15
+Engaged in diving operations                                               8277       12
+Tanker - Carrying DG, HS, or MP, IMO Hazard or pollutant category B        1737       11
+Tanker - No additional info                                                5631       11
+Other - No additional info                                                16533       10
+Law enforcement                                                            1003        9
+Pilot vessel                                                              11658        8
+Cargo ship - Carrying DG, HS, or MP, IMO Hazard or pollutant category D     333        8
+Reserved                                                                   7906        8
+SAR                                                                         285        7
+Tanker - Carrying DG, HS, or MP, IMO Hazard or pollutant category D        4074        6
+Towing                                                                     4088        5
+Passenger ship - No additional info                                        4511        5
+Other - Reserved 5                                                         5234        4
+Cargo ship - Reserved 5                                                    3626        4
+Cargo ship - Carrying DG, HS, or MP, IMO Hazard or pollutant category B     808        3
+Other - Carrying DG, HS, or MP, IMO Hazard or pollutant category A         7322        3
+Tanker - Carrying DG, HS, or MP, IMO Hazard or pollutant category C        1952        2
+Engaged in military operations                                              274        2
+HSC - All                                                                  1957        2
+Engaged in dredging or underwater operations                               1539        2
+Local 57                                                                   1108        2
+Local 56                                                                    185        2
+Cargo ship - Reserved 7                                                    2922        1
+HSC - Reserved 7                                                            100        1
+Other - Reserved 7                                                         2803        1
+Other - Reserved 6                                                            6        1
+Passenger ship - Reserved 5                                                  15        1
+Reserved - All                                                              309        1
+Towing Long/Large                                                          2171        1
+unknown code 1                                                                7        1
+unknown code 9                                                             1819        1
+
+[P6] 2026-07: Hedland probe box rows 294710, vessels 449
+
+[P6] 2026-08: Hedland probe box rows 289553, vessels 457
+
+==== [P7] 2026-08: LENGTH/BEAM per CRAFT_ID (box)
+LENGTH: rows null 0.00%, rows zero 2.01%; vessels 457, all null/zero 7.22%, >1 distinct value 0.66%; row-to-row changes 4 of 289096 transitions
+BEAM: rows null 0.00%, rows zero 2.07%; vessels 457, all null/zero 7.88%, >1 distinct value 0.44%; row-to-row changes 2 of 289096 transitions
+
+==== [P8] 2026-08: per-CRAFT_ID modal TYPE classification (box). Row TYPE kept unchanged.
+vessels by TYPE_CLASS:
+TYPE_CLASS
+cargo      326
+other       98
+unknown     25
+tanker       8
+
+vessels with modal LENGTH >= 150 m: 326; by TYPE_CLASS:
+TYPE_CLASS
+cargo      314
+tanker       8
+unknown      2
+other        2
+
+by TYPE_MODAL (modal LENGTH >= 150 m):
+TYPE_MODAL
+Cargo ship - All                                                           299
+Cargo ship - No additional info                                             14
+Tanker - Carrying DG, HS, or MP, IMO Hazard or pollutant category A          3
+Tanker - All                                                                 3
+unknown code 0                                                               2
+Cargo ship - Carrying DG, HS, or MP, IMO Hazard or pollutant category A      1
+Tanker - No additional info                                                  1
+Passenger ship - All                                                         1
+Tanker - Carrying DG, HS, or MP, IMO Hazard or pollutant category B          1
+Tug                                                                          1
+
+vessels with >1 TYPE value (incl NaN) in month: 13 of 457; of which modal LENGTH >= 150 m: 10
+of those, vessels whose rows span >1 TYPE_CLASS: 2
+
+==== [P9] 2026-08: unclassified_size reason code (modal L or B missing/zero), box
+all vessels: 37 of 457
+by TYPE_CLASS:
+            sum  size
+TYPE_CLASS           
+cargo         1   326
+other        14    98
+tanker        0     8
+unknown      22    25
+('implausible' dimensions are not defined yet; only missing/zero counted)
+
+==== [P10] 2026-08: modal L/B, TYPE_CLASS == cargo, sized vessels (box)
+n = 325
+          L_MODAL     B_MODAL
+count  325.000000  325.000000
+mean   283.655385   46.212308
+std     45.314995    7.948202
+min     53.000000   16.000000
+5%     179.200000   29.200000
+10%    229.000000   32.000000
+25%    292.000000   45.000000
+50%    295.000000   46.000000
+75%    300.000000   50.000000
+90%    325.000000   57.000000
+95%    327.000000   57.000000
+max    340.000000   60.000000
+LENGTH, 20 m bins (non-empty):
+L_MODAL
+(40, 60]        1
+(100, 120]      3
+(120, 140]      6
+(140, 160]      3
+(160, 180]     10
+(180, 200]      9
+(220, 240]      2
+(240, 260]     19
+(280, 300]    228
+(300, 320]      2
+(320, 340]     42
+BEAM, 4 m bins (non-empty):
+B_MODAL
+(12, 16]      1
+(16, 20]      7
+(20, 24]      4
+(24, 28]      4
+(28, 32]     18
+(40, 44]     20
+(44, 48]    123
+(48, 52]    107
+(52, 56]      2
+(56, 60]     39
+
+==== [P11] 2026-08: ping intervals within CRAFT_ID, box (minutes)
+all: {'count': 289096.0, 'mean': 18.9, 'std': 225.5, 'min': 0.0, '5%': 9.0, '25%': 15.0, '50%': 15.0, '75%': 15.0, '95%': 21.0, 'max': 42918.2}
+SOG < 0.5 kn: {'count': 244659.0, 'mean': 17.1, 'std': 132.0, 'min': 0.0, '5%': 9.0, '25%': 15.0, '50%': 15.0, '75%': 15.0, '95%': 21.0, 'max': 42918.2}
+share < 15 min 35.00% | > 60 min 0.35% | > 6 h 0.12% (gaps include time spent outside the box between visits)
+
+==== [P12] 2026-08: SPEED distribution, box rows
+SPEED
+(-0.01, 0.1]    78.27%
+(0.1, 0.3]       5.31%
+(0.3, 0.5]       1.57%
+(0.5, 1.0]       1.22%
+(1.0, 2.0]       0.99%
+(2.0, 4.0]       1.49%
+(4.0, 8.0]       4.67%
+(8.0, 12.0]      5.34%
+(12.0, 30.0]     1.16%
+
+==== [P13] CRAFT_ID stability Jul -> Aug (position-based pairing at the month boundary)
+box vessels Jul 449, Aug 457, IDs in both 284
+stationary (SOG < 0.5) at boundary: Jul-side 113, Aug-side 108
+pairs within 200 m: 112; same CRAFT_ID: 105
+mismatches (L_jul, L_aug): [(18, 17), (12, 53), (24, 20), (32, 28), (32, 30), (32, 30), (10, 28)]
+min L_jul among mismatches: 10.0; min L_jul among matched pairs with L >= 50 m: 53.0
+matched pairs with L_jul >= 50 m: 71; mismatches with L_jul >= 50 m: 0
+matched pairs with identical L/B: 105
