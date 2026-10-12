@@ -50,7 +50,7 @@ Fails only the last test -> ship the call-count version and say so. Timebox: 4 w
 - [Unverified] PPA month basis in older files: the Jan 2015 commodity file filters on departure date; 2026 files on cargo-complete date.
 - [Unverified] Berth polygon source. PPA handbook gives no coordinates (§6.13-6.24). Candidates: OSM `seamark:type=berth` (19 named polygons, ODbL, naming/accuracy unverified), AHO AUS 53 / ENC PT613, or digitised from imagery with the method documented. Do not invent polygons. Blocks the S0 gate. See STATUS.md "Boundary sources".
 - [Unverified] Port limit: working limit is SLIP LGATE-243 (adopted 2026-10-12); equivalence to handbook §4.3 and the LGATE-243 licence terms are unverified. Provisional working limit is the polygon + 500 m (closes a harbour gap; STATUS.md).
-- [Unverified] Whether PPA monthly statistics use local (AWST) or UTC months. Basis is cargo-complete date (STATUS.md); no time of day or timezone in the files.
+- PPA date timezone unknown: PPA dates carry no time of day and no stated timezone (Jul/Aug 2026 files). Whether PPA months are local (AWST) or UTC is [Unverified]. Basis is cargo-complete date (STATUS.md).
 - `implausible` flag: no definition. The handbook states no maximum sailing draught (§4.6, §4.8, §7.21). Do not define without a sourced rule.
 - Licences to be read by Jack before S0 closes fully: AMSA, SLIP LGATE-243, PPA statistics.
 - [Unverified] Which Hedland berths are multi-user (handbook §6.16 PH4 indicates yes; keyword scan only), and the PPA published cargo/berth list.

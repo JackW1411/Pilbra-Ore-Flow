@@ -1,0 +1,97 @@
+==== pilotage-line boundary (P) vs +500 m working limit (W): extra calls. Report only; config unchanged.
+kept calls: P 584, W 489, net extra +95
+
+[B1] P calls with no overlapping kept W call: 44 (of which overlapping an excluded W call: 44)
+     kept W calls split into >1 P call: 6; P calls in those splits: 59; split sizes {2: 2, 4: 1, 5: 1, 20: 1, 26: 1}
+     kept W calls with no overlapping kept P call: 2
+     extra set (not one-to-one): 103 P calls; check: no-W 44 + split surplus 53 - unmatched W 2 = net +95
+
+[B2] draught outcome in the extra set: {'unchanged': 79, 'increased': 21, 'decreased': 3}
+     draught outcome in one-to-one P calls: {'increased': 450, 'unchanged': 26, 'no_draught at outbound': 3, 'decreased': 1, 'no_draught at inbound': 1}
+
+[B3] draught-unchanged calls in the extra set: 79 (OSM via https://overpass.private.coffee/api/interpreter; failed before: ['attempt 2', 'https://overpass-api.de/api/interpreter: HTTP Error 504: Gateway Timeout'])
+  by modal-length bin: [150, 200): 75, [200, 260): 3, [260, 300): 1, [300, 320): 0, [320, 400): 0
+  dwell hours inside P: {'count': 79.0, 'mean': 12.8, 'std': 13.3, 'min': 0.0, '10%': 2.2, '50%': 11.6, '90%': 18.1, 'max': 81.6}
+  in a split W call: 53; no kept W call in window: 26; vessel has any W call (kept or excluded) overlapping the window: 79
+  nearest OSM berth to stationary-ping centroid: D: 78, PH 1: 1
+  distance to nearest OSM berth (m): {'count': 79.0, 'mean': 15394.0, 'std': 2906.0, 'min': 8.0, '50%': 15807.0, '90%': 16294.0, 'max': 16351.0}
+  per call (no IDs): modal L | dwell h | in split W call (n) | any W overlap | nearest OSM berth | distance m
+      179 |    0.0 | 26 | True  | D      |  16323
+      182 |    0.3 |  0 | True  | D      |  15839
+      158 |    0.8 |  0 | True  | D      |  15877
+      182 |    0.8 |  0 | True  | D      |  15782
+      179 |    1.2 | 26 | True  | D      |  16231
+      179 |    1.5 | 26 | True  | D      |  16340
+      178 |    1.5 |  0 | True  | D      |  16275
+      179 |    2.1 | 26 | True  | D      |  16293
+      178 |    2.2 |  0 | True  | D      |  16280
+      179 |    2.5 | 26 | True  | D      |  16306
+      178 |    2.7 |  0 | True  | D      |  16254
+      182 |    3.0 |  0 | True  | D      |  15763
+      182 |    3.2 |  0 | True  | D      |  15793
+      182 |    3.3 |  0 | True  | D      |  15831
+      158 |    3.8 |  0 | True  | D      |  15863
+      158 |    3.8 |  0 | True  | D      |  15849
+      179 |    3.8 | 26 | True  | D      |  16332
+      179 |    4.0 | 26 | True  | D      |  16247
+      182 |    4.0 |  0 | True  | D      |  15798
+      180 |    4.2 | 20 | True  | D      |  15748
+      178 |    4.5 |  0 | True  | D      |  16276
+      178 |    4.5 |  0 | True  | D      |  16235
+      179 |    4.5 | 26 | True  | D      |  16275
+      180 |    4.7 |  5 | True  | D      |  15768
+      158 |    4.8 |  0 | True  | D      |  15837
+      158 |    4.8 |  0 | True  | D      |  15849
+      182 |    4.9 |  0 | True  | D      |  15807
+      180 |    5.0 | 20 | True  | D      |  15758
+      180 |    6.0 | 20 | True  | D      |  15722
+      158 |    6.3 |  0 | True  | D      |  15862
+      180 |    6.8 | 20 | True  | D      |  15706
+      179 |    7.7 | 26 | True  | D      |  16242
+      180 |    7.8 | 20 | True  | D      |  15720
+      179 |    9.8 | 26 | True  | D      |  16190
+      180 |    9.8 | 20 | True  | D      |  15687
+      180 |   10.0 | 20 | True  | D      |  15690
+      180 |   10.3 | 20 | True  | D      |  15721
+      179 |   11.4 | 26 | True  | D      |  16351
+      179 |   11.5 | 26 | True  | D      |  16212
+      180 |   11.6 | 20 | True  | D      |  15716
+      179 |   12.0 | 26 | True  | D      |  16222
+      179 |   13.5 | 26 | True  | D      |  16303
+      182 |   13.8 |  0 | True  | D      |  15768
+      182 |   14.0 |  0 | True  | D      |  15695
+      179 |   14.2 | 26 | True  | D      |  16260
+      182 |   14.4 |  0 | True  | D      |  15764
+      179 |   14.5 | 26 | True  | D      |  16242
+      229 |   14.7 |  4 | True  | D      |  15753
+      179 |   15.0 | 26 | True  | D      |  16270
+      182 |   15.4 |  0 | True  | D      |  15695
+      179 |   15.5 | 26 | True  | D      |  16221
+      180 |   15.5 | 20 | True  | D      |  15738
+      180 |   15.5 | 20 | True  | D      |  15739
+      182 |   15.5 |  0 | True  | D      |  15705
+      180 |   15.5 | 20 | True  | D      |  15711
+      158 |   15.5 |  0 | True  | D      |  15852
+      180 |   15.8 | 20 | True  | D      |  15722
+      179 |   16.0 | 26 | True  | D      |  16302
+      229 |   16.3 |  4 | True  | D      |  15766
+      180 |   16.3 |  5 | True  | D      |  15806
+      179 |   16.5 | 26 | True  | D      |  16282
+      179 |   16.5 | 26 | True  | D      |  16295
+      180 |   16.7 | 20 | True  | D      |  15715
+      180 |   16.8 |  5 | True  | D      |  15767
+      179 |   17.0 | 26 | True  | D      |  16289
+      180 |   17.0 | 20 | True  | D      |  15715
+      180 |   17.0 | 20 | True  | D      |  15716
+      180 |   17.2 |  5 | True  | D      |  15802
+      180 |   17.5 | 20 | True  | D      |  15713
+      229 |   17.5 |  4 | True  | D      |  15787
+      180 |   18.0 | 20 | True  | D      |  15714
+      182 |   18.4 |  0 | True  | D      |  15758
+      179 |   18.5 | 26 | True  | D      |  16254
+      179 |   28.8 | 26 | True  | D      |  16283
+      292 |   32.2 |  2 | True  | D      |      8
+      179 |   40.8 | 26 | True  | D      |  16263
+      180 |   42.5 | 20 | True  | D      |  15688
+      180 |   71.0 |  5 | True  | D      |   2899
+      170 |   81.6 |  0 | True  | PH 1   |     23
