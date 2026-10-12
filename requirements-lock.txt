@@ -1,5 +1,7 @@
-# Exact versions used for scripts/s0 and tests/ (pip freeze subset of direct imports).
-# Python 3.12.10 on Windows; generated 2026-10-12. Install: pip install -r requirements-lock.txt
+# Pinned-versions list, NOT a hashed lockfile: no package hashes, no transitive dependencies.
+# Covers the direct third-party imports of scripts/s0 and tests/ at the versions installed when generated.
+# Python version: 3.12.10 (CPython, 64-bit, Windows 10). Generated 2026-10-12.
+# Install: python -m pip install -r requirements-lock.txt
 geopandas==1.1.4
 numpy==2.5.1
 pandas==3.0.5
