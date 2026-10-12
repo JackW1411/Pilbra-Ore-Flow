@@ -1,6 +1,6 @@
 # load_amsa contract (design only, nothing decided)
 
-Scope: read AMSA CTS sub-area point files (`ct_nw_MM_YYYY_pt.shp` under `DATA_ROOT/raw`) into one frame. Every row below is **DECISION: Jack**. Evidence tags: `P#` = `scripts/s0/output/probe_s0.txt`; fixtures = `tests/synthetic.py`; config = `config/project.toml`.
+Scope: read AMSA CTS sub-area point files (`ct_nw_MM_YYYY_pt.shp` under `DATA_ROOT/raw`) into one frame. Every row below is **DECISION: Jack**. Evidence tags: `P#` = `scripts/s0/output/probe_s0.txt`; `F#` = `scripts/s0/output/probe_format.txt`; fixtures = `tests/synthetic.py`; config = `config/project.toml`.
 **Evidence base: only July and August 2026 NW files were inspected. 2014-2025 is [Unverified].**
 
 Known facts used: fields `craft_id, longitude, latitude, course, speed, type, length, beam, draught, timestamp`; float64 except `type`, `timestamp` (str); EPSG:4326; Jul 892,212 / Aug 992,794 rows (P1) [High]. Timestamp is `dd/mm/yyyy HH:MM:SS` 24-hour plus a redundant AM/PM tag; parsing as 12-hour (as the metadata says) silently drops ~49% of rows; 0 tag/hour conflicts in both months (P2) [High]. UTC per metadata; heuristic agrees (P3) [Unverified]. The metadata's field list is wrong in names and types (STATUS.md) [High].
@@ -12,10 +12,10 @@ Known facts used: fields `craft_id, longitude, latitude, course, speed, type, le
 | R1 columns | Keep the 10 real lowercase names (P1) | Rename to uppercase as the probe did | Matches the files; no mapping layer to drift | Renaming later touches every module | DECISION: Jack |
 | R2 dtypes | float64 for the 8 numeric fields as read; `type` as pandas `string` with `<NA>` | Downcast; `length`/`beam` to `Int16` as the metadata claims | P1 shows float64 on disk; metadata types are wrong [High] | Downcasting hides non-integral values [Unverified whether any exist] | DECISION: Jack |
 | R3 time | New `timestamp_utc` = `datetime64[ns, UTC]` parsed from chars 0-19 with `%d/%m/%Y %H:%M:%S`; keep the raw string | tz-naive UTC; or drop the raw string | Aware UTC blocks accidental local-time arithmetic (aggregation tz `Australia/Perth` lives in config) | Naive: silent 8 h shifts in daily/monthly bins | DECISION: Jack |
-| R4 craft_id | Keep float64 | `Int64`, raising if any value is non-integral | Real values are float64 (P1) [High] and include negatives (`edge_rows()` mirrors a real one) [High]; magnitudes to ~4.5e10 seen in the S0 first-run pair table, not printed by the committed P13 [Med]; integrality across all rows [Unverified] | float64 keys make joins fragile; Int64 fails if a fractional ID exists | DECISION: Jack |
+| R4 craft_id | Keep float64 | `Int64`, raising if any value is non-integral | Real values are float64 (P1); all whole numbers, no NaN, range -2,146,018,332 to 46,283,679,282, well below 2^53, so an Int64 cast is lossless for Jul/Aug 2026 (F1) [High]; other years [Unverified] | float64 keys make joins fragile; Int64 fails if a fractional ID exists | DECISION: Jack |
 | R5 extra columns | Raise on any column not in the 10 | Pass through; or drop with a warning | Schema drift should be loud (metadata already wrong once) | Raising blocks older years until each schema is mapped | DECISION: Jack |
-| R6 geometry | Plain DataFrame from `longitude`/`latitude`; no reprojection | GeoDataFrame in EPSG:4326 | Attributes duplicate the point geometry (P1); EPSG:7850 conversion belongs to distance work (Fixed decision) | GeoDataFrame costs memory on ~1M rows/month | DECISION: Jack |
-| R7 order + provenance | Preserve file order; add `source_file` | Sort by `craft_id`, time | Real files are unsorted (`edge_rows()` reversed order); provenance needed for month edges (section 4) | Sorting in load hides input order issues | DECISION: Jack |
+| R6 geometry | Plain DataFrame from `longitude`/`latitude`; no reprojection | GeoDataFrame in EPSG:4326 | Attributes equal the point geometry: 0 rows differ by > 1e-6 deg, max difference 1.1e-13 deg, no empty geometry (F2) [High]; EPSG:7850 conversion belongs to distance work (Fixed decision) | GeoDataFrame costs memory on ~1M rows/month | DECISION: Jack |
+| R7 order + provenance | Preserve file order; add `source_file` | Sort by `craft_id`, time | Real files are in neither time nor craft_id order: ~50% of consecutive pairs in order for each key (F4) [High]; provenance needed for month edges (section 4) | Sorting in load hides input order issues | DECISION: Jack |
 
 ## 2. Raises on
 
@@ -36,7 +36,7 @@ load_amsa must not: turn zero `length`/`beam`/`draught` into NaN or judge them i
 
 | # | Recommendation | Alternative | Why | Cost if wrong | |
 |---|---|---|---|---|---|
-| X1 duplicate rows | Keep; report count of exact duplicates | Drop exact duplicates in load | Within-vessel ping intervals of 0.0 min exist (P11 min) [High]; whether they are full-row duplicates [Unverified]; `edge_rows()` has one | Dropping in load hides a data-quality signal; keeping inflates counts if clean forgets | DECISION: Jack |
+| X1 duplicate rows | Keep; report count of exact duplicates | Drop exact duplicates in load | Exact duplicates: Jul 0, Aug 1; same craft_id + timestamp: Jul 1, Aug 3 (F5) [High]; `edge_rows()` has one | Dropping in load hides a data-quality signal; keeping inflates counts if clean forgets | DECISION: Jack |
 | X2 rows outside the file's UTC month | Raise, with file, count and range | Keep and tag with `source_file` | Jul/Aug 2026 files hold only their own UTC month (P1 TS ranges) [High]; other years [Unverified] | Raising may block files with legitimate edge rows | DECISION: Jack |
 | X3 calls straddling two files | Accept a list of files and concatenate; no cross-file dedup; `source_file` kept | One file per call | Calls cross month ends (fixture `month_boundary_call`; S0 found 34-37 calls with no observed crossing at data edges, V2) [High] | Per-file loading truncates calls | DECISION: Jack |
 | X4 empty or zero-row file | Return an empty frame with the full schema and dtypes, plus a warning | Raise | Lets month loops run | An empty AMSA file may mean a failed extract; never observed [Unverified] | DECISION: Jack |
@@ -44,8 +44,9 @@ load_amsa must not: turn zero `length`/`beam`/`draught` into NaN or judge them i
 | X6 file naming | Locate by glob `ct_nw_*_pt.shp` under DATA_ROOT; record the path | Read straight from the nested zip | Actual prefix is `ct_nw_`, not the metadata's `cts_nw_` (STATUS.md) [High] | A wrong prefix finds nothing, or the wrong sub-area | DECISION: Jack |
 
 ## Open questions
-1. Are all `craft_id` values integral across a whole month? (R4) [Unverified]
-2. Are 0-minute intervals (P11) exact duplicate rows or distinct reports? (X1)
+1. ~~Are all `craft_id` values integral?~~ Yes for Jul/Aug 2026 (F1); other years unverified. (R4)
+2. ~~Are 0-minute intervals exact duplicates?~~ Partly: Aug has 1 exact duplicate and 3 same-key rows; Jul 0 and 1 (F5). What the same-key, non-identical rows contain is unexamined. (X1)
+8. New from F3: draught 25.5 (AIS "25.5 m or more" code) appears 129 times in Jul, 0 in Aug; length reaches 708 m (Jul) and beam 96 m (Aug), inside AIS encoding limits but beyond real ships. Per section 3 these belong to `clean`; listed so the boundary is explicit. No heading field exists.
 3. Is the AMSA timestamp truly UTC? (P3 heuristic only)
 4. Do 2014-2025 files share the 2026 field names, dtypes, timestamp format and CRS? (X5)
 5. Can a file contain rows from a neighbouring month? (X2)

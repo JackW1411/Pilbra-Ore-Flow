@@ -1,0 +1,40 @@
+format probe; files as read, nothing corrected
+2026-07: 892212 rows, columns ['craft_id', 'longitude', 'latitude', 'course', 'speed', 'type', 'length', 'beam', 'draught', 'timestamp'], CRS EPSG:4326
+2026-08: 992794 rows, columns ['craft_id', 'longitude', 'latitude', 'course', 'speed', 'type', 'length', 'beam', 'draught', 'timestamp'], CRS EPSG:4326
+
+==== [F1] craft_id: whole numbers?
+2026-07: min -2146018332.0, max 45788399209.0, NaN 0, negative 30383, non-whole 0, distinct 1682, |max| below 2^53: True
+2026-08: min -2129720213.0, max 46283679282.0, NaN 0, negative 26515, non-whole 0, distinct 1593, |max| below 2^53: True
+
+==== [F2] point geometry vs longitude/latitude columns (degrees)
+2026-07: null/empty geometry 0; rows differing by > 1e-6 deg 0; largest |dlon| 1.137e-13, largest |dlat| 7.461e-14
+2026-08: null/empty geometry 0; rows differing by > 1e-6 deg 0; largest |dlon| 1.137e-13, largest |dlat| 7.461e-14
+
+==== [F3] AIS sentinels and out-of-range values per numeric field
+heading field present: False
+2026-07:
+  longitude NaN      0 | sentinels {181.0: 0} | < -180.0: 0 | > 180.0 (excl. sentinels): 0 | observed 110.00369..125.44776
+  latitude  NaN      0 | sentinels {91.0: 0} | < -90.0: 0 | > 90.0 (excl. sentinels): 0 | observed -22.9847..-11.71887
+  speed     NaN      0 | sentinels {102.3: 0} | < 0.0: 0 | > 102.2 (excl. sentinels): 0 | observed 0.0..96.0
+  course    NaN      0 | sentinels {360.0: 0} | < 0.0: 0 | > 359.9 (excl. sentinels): 0 | observed 0.0..359.9
+  length    NaN      0 | sentinels {} | < 0.0: 0 | > 1022.0 (excl. sentinels): 0 | observed 0.0..708.0
+  beam      NaN      0 | sentinels {} | < 0.0: 0 | > 126.0 (excl. sentinels): 0 | observed 0.0..91.0
+  draught   NaN      0 | sentinels {25.5: 129} | < 0.0: 0 | > 25.4 (excl. sentinels): 0 | observed 0.0..25.5
+  craft_id  NaN 0 (no range defined)
+2026-08:
+  longitude NaN      0 | sentinels {181.0: 0} | < -180.0: 0 | > 180.0 (excl. sentinels): 0 | observed 110.03101..125.45461
+  latitude  NaN      0 | sentinels {91.0: 0} | < -90.0: 0 | > 90.0 (excl. sentinels): 0 | observed -22.98396..-11.63875
+  speed     NaN      0 | sentinels {102.3: 0} | < 0.0: 0 | > 102.2 (excl. sentinels): 0 | observed 0.0..86.7
+  course    NaN      0 | sentinels {360.0: 0} | < 0.0: 0 | > 359.9 (excl. sentinels): 0 | observed 0.0..359.9
+  length    NaN      0 | sentinels {} | < 0.0: 0 | > 1022.0 (excl. sentinels): 0 | observed 0.0..511.0
+  beam      NaN      0 | sentinels {} | < 0.0: 0 | > 126.0 (excl. sentinels): 0 | observed 0.0..96.0
+  draught   NaN      0 | sentinels {25.5: 0} | < 0.0: 0 | > 25.4 (excl. sentinels): 0 | observed 0.0..23.1
+  craft_id  NaN 0 (no range defined)
+
+==== [F4] row order within each file
+2026-07: consecutive pairs in time order 51.00%; craft_id non-decreasing 50.07%; (craft_id, time) order 50.00%
+2026-08: consecutive pairs in time order 50.13%; craft_id non-decreasing 50.14%; (craft_id, time) order 50.02%
+
+==== [F5] exact duplicate rows (all 10 attribute columns identical, raw values)
+2026-07: exact duplicates (rows beyond the first copy) 0; context: rows sharing craft_id + timestamp with an earlier row 1
+2026-08: exact duplicates (rows beyond the first copy) 1; context: rows sharing craft_id + timestamp with an earlier row 3
