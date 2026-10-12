@@ -1,0 +1,10 @@
+checked 2026-10-12 07:28 UTC source https://overpass.private.coffee/api/interpreter; failed before success: ['https://overpass-api.de/api/interpreter: HTTP Error 504: Gateway Timeout']
+patch (lon/lat, from config harbour_gap_patch, gate_proxy V7): [118.5838, -20.3274, 118.5866, -20.324]
+
+[N1] OSM berth features: 19; intersecting the patch: 2
+[N2] nearest 5 (distance from patch rectangle / from patch centroid, metres, EPSG:7850):
+  way/388761297 name='F' operator='BHP Billiton': 0 m / 0 m
+  way/388761296 name='E' operator='BHP Billiton': 0 m / 145 m
+  way/388652004 name='AP3' operator=nan: 348 m / 586 m
+  way/388353128 name='B' operator='BHP Billiton': 400 m / 638 m
+  way/388652002 name='AP2' operator=nan: 428 m / 640 m

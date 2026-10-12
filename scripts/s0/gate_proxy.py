@@ -38,8 +38,16 @@ def load_config():
     return tomllib.loads((ROOT / "config" / "project.toml").read_text(encoding="utf-8"))
 
 
+def working_limit(raw_geom, cfg):
+    """Provisional working limit: the SLIP polygon buffered by port_limit.buffer_m (EPSG:7850), capped at 500 m."""
+    b = cfg["port_limit"]["buffer_m"]
+    if not 0 <= b <= cfg["port_limit"]["max_buffer_m"]:
+        raise ValueError(f"port_limit.buffer_m={b} outside [0, {cfg['port_limit']['max_buffer_m']}]")
+    return raw_geom.buffer(b) if b else raw_geom
+
+
 def load_inputs(cfg):
-    """AIS rows (both months) with projected x/y, and the working port-limit geometry, all in EPSG:7850."""
+    """AIS rows (both months) with projected x/y, and the UNBUFFERED SLIP polygon, all in EPSG:7850."""
     pl, crs = cfg["port_limit"], cfg["crs"]
     limit = gpd.read_file(ROOT / pl["path"]).set_crs(pl["crs"], allow_override=True).to_crs(crs["distance"])
     df = pd.concat([load(m)[0] for m in MONTHS], ignore_index=True)
@@ -125,7 +133,10 @@ def main():
     print(f"port limit: {cfg['port_limit']['source']}; equivalence to handbook §4.3 [Unverified]")
     print(f"params: {p}; aggregation timezone {tz}; geometric tests in {cfg['crs']['distance']}")
 
-    df, geom = load_inputs(cfg)
+    df, raw_geom = load_inputs(cfg)
+    geom = working_limit(raw_geom, cfg)
+    print(f"working limit: SLIP polygon + {cfg['port_limit']['buffer_m']} m buffer (EPSG:7850), "
+          f"area {geom.area / 1e6:.1f} km2 (unbuffered {raw_geom.area / 1e6:.1f})")
     print(f"AIS rows {len(df)} ({MONTHS[0]}..{MONTHS[-1]}), TS {df.TS.min()} -> {df.TS.max()} (taken as UTC)")
     x, vin, v = build_calls(df, geom, p)
 
@@ -231,6 +242,23 @@ def main():
     print(f"  eligible vessels, stationary pings south of the pilotage latitude within the polygon bbox: {len(elig_rows)}; "
           f"inside polygon {int(elig_rows.INSIDE.sum())}; outside: "
           f"{len(out_rows)} rows, {out_rows.CRAFT_ID.nunique()} vessels")
+
+    section("V8", "calls with unchanged draught (|out - in| <= resolution), kept calls; descriptive only")
+    k["DWELL_H"] = (k.T_OUT - k.T_IN).dt.total_seconds() / 3600
+    k["L_BIN"] = pd.cut(k.L_MODAL, [150, 200, 260, 300, 320, 400], right=False)
+    un, ch = k[k.UPDATE == "unchanged"], k[k.UPDATE.isin(["increased", "decreased"])]
+    print(f"  unchanged: {len(un)} of {len(k)} kept calls ({len(testable)} testable)")
+    for col, name in [("FIRST_OUT", "UTC exit month")]:
+        print(f"  by {name}: " + ", ".join(f"{m}: {n}" for m, n in un[col].dt.strftime("%Y-%m").value_counts().sort_index().items()))
+    print("  by modal-length bin (m; bins are not a size-class decision): unchanged / changed")
+    for b in k.L_BIN.cat.categories:
+        print(f"    {str(b):>12}: {int((un.L_BIN == b).sum()):>4} / {int((ch.L_BIN == b).sum()):>4}")
+    pc = [.1, .25, .5, .75, .9]
+    print(f"  dwell hours inside (first to last inside ping), unchanged: {un.DWELL_H.describe(percentiles=pc).round(1).to_dict()}")
+    print(f"  dwell hours inside, changed:                               {ch.DWELL_H.describe(percentiles=pc).round(1).to_dict()}")
+    print(f"  unchanged with dwell < 12 h: {int((un.DWELL_H < 12).sum())}; >= 24 h: {int((un.DWELL_H >= 24).sum())}")
+    print(f"  unchanged: inbound draught {un.DRAUGHT_IN.describe(percentiles=[.5]).round(1).to_dict()}")
+    print(f"  unchanged calls merged from >1 inside run: {int((un.N_RUNS > 1).sum())}")
 
     CSV.parent.mkdir(parents=True, exist_ok=True)
     x.join(k[["UPDATE"]]).to_csv(CSV, index=False)

@@ -1,9 +1,9 @@
-"""Port-limit polygon sensitivity: buffer the working SLIP polygon in EPSG:7850 and count calls.
+"""Port-limit polygon sensitivity: buffer the UNBUFFERED SLIP polygon in EPSG:7850 and count calls.
 
 Run from the repo root:  python scripts/s0/polygon_sensitivity.py
 Writes scripts/s0/output/polygon_sensitivity.txt. Same call definition as gate_proxy.py (build_calls).
 Buffers come from config [s0_gate_proxy].buffers_m. The polygon includes land; buffering moves both edges,
-only the seaward one matters. Nothing here is a polygon choice: 0 m is the working limit.
+only the seaward one matters. Buffers are relative to the unbuffered SLIP polygon; the working limit is +port_limit.buffer_m (config).
 """
 import sys
 
