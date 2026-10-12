@@ -1,7 +1,7 @@
 S0 probe. pandas 3.0.5, pyogrio 0.13.0
 Probe box (NOT a port limit): lon (117.9, 119.3), lat (-20.45, -19.4)
 
-==== [P1] 2026-07: schema and extent (data\raw\sub_2026_07\pt\cts_sub-areas_07_2026_pt\ct_nw_07_2026_pt.shp)
+==== [P1] 2026-07: schema and extent (DATA_ROOT/raw/sub_2026_07/pt/cts_sub-areas_07_2026_pt/ct_nw_07_2026_pt.shp)
 raw fields: ['craft_id', 'longitude', 'latitude', 'course', 'speed', 'type', 'length', 'beam', 'draught', 'timestamp']
 raw dtypes: ['float64', 'float64', 'float64', 'float64', 'float64', 'object', 'float64', 'float64', 'float64', 'object']
 CRS: EPSG:4326 | features: 892212
@@ -10,7 +10,7 @@ IMO/MMSI-like fields: []
 LON 110.00369..125.44776  LAT -22.98470..-11.71887
 TS range: 2026-07-01 00:00:05 -> 2026-07-31 23:59:36
 
-==== [P1] 2026-08: schema and extent (data\raw\sub_2026_08\pt\cts_sub-areas_08_2026_pt\ct_nw_08_2026_pt.shp)
+==== [P1] 2026-08: schema and extent (DATA_ROOT/raw/sub_2026_08/pt/cts_sub-areas_08_2026_pt/ct_nw_08_2026_pt.shp)
 raw fields: ['craft_id', 'longitude', 'latitude', 'course', 'speed', 'type', 'length', 'beam', 'draught', 'timestamp']
 raw dtypes: ['float64', 'float64', 'float64', 'float64', 'float64', 'object', 'float64', 'float64', 'float64', 'object']
 CRS: EPSG:4326 | features: 992794

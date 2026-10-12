@@ -118,7 +118,7 @@ def main():
     for month in MONTHS:
         df, raw_cols = load(month)
         data[month] = df
-        section("P1", f"{month}: schema and extent ({shp_path(month).relative_to(ROOT)})")
+        section("P1", f"{month}: schema and extent (DATA_ROOT/{shp_path(month).relative_to(DATA).as_posix()})")
         info = pyogrio.read_info(shp_path(month))
         print("raw fields:", raw_cols)
         print("raw dtypes:", list(info["dtypes"]))
