@@ -1,0 +1,13 @@
+==== port-limit polygon sensitivity (SLIP LGATE-243 Port Hedland, buffered in EPSG:7850)
+working polygon: 4 part(s); interior rings (holes) per part: [0, 0, 0, 0]; part areas km2: [0.0, 0.1, 0.9, 1264.3]
+row-level check (row TYPE Cargo*, row LENGTH >= 150 m, SOG < 0.5 kn, south of -20.166667, within polygon bbox): 83415 rows; inside polygon 73681, outside 9734
+  outside rows lon 118.5838..118.5866, lat -20.3274..-20.3240
+buffer_m  area_km2 calls_all eligible  kept transit no_in no_out ais_gap testable changed parts holes  kept vs 0 m
+   -2000     863.0      3272     1104   287     781    18     18       0      287      68     3     0  -182 (-38.8%)
+   -1000    1044.6      3569      985   360     577    23     25       0      360     153     2     0  -109 (-23.2%)
+    -500    1148.9      2712      784   425     301    29     29       0      422     308     2     0  -44 (-9.4%)
+       0    1265.3       993      631   469      93    34     35       0      467     415     4     0  +0 (+0.0%)
+     500    1380.5       743      566   489       4    36     37       0      487     466     1     2  +20 (+4.3%)
+    1000    1480.4       746      569   489       7    36     37       0      487     466     1     0  +20 (+4.3%)
+    2000    1679.1       758      580   490      17    36     37       1      484     463     1     0  +21 (+4.5%)
+changed = draught differs by > 0.1 m between inbound and outbound (resolution from gate_proxy.txt V3).

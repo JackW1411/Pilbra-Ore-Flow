@@ -1,14 +1,17 @@
-"""PROVISIONAL GATE PROXY, ALL DEPARTURES, NOT THE S0 GATE.
+"""PROVISIONAL GATE PROXY V2, ALL DEPARTURES, NOT THE S0 GATE.
 
-For each outbound crossing of the working port limit (SLIP LGATE-243 Port Hedland polygon) by a vessel with
-modal LENGTH >= min_modal_length_m and modal TYPE_CLASS == cargo: does it report a non-zero draught in the
-final inside pings before exit? The denominator is ALL such departures (laden and ballast), because no
-draught-free laden-departure definition exists yet (needs berth polygons). It is therefore not the S0 gate.
+Draught-update test. A call = inbound crossing into, and outbound crossing out of, the working port limit
+(SLIP LGATE-243 Port Hedland polygon), with inside runs separated by < merge_gap_hours merged into one call.
+For calls by vessels with modal TYPE_CLASS cargo and modal LENGTH >= min_modal_length_m, report the fraction
+whose outbound draught (last inside ping) differs from the inbound draught (first inside ping) by more than
+the field's resolution. The denominator includes ballast departures; it is not the S0 gate.
+
+Also reports: draught resolution (measured), round/default-value shares, plausibility-bound counts, and a
+transit breakdown. The polygon sensitivity test is scripts/s0/polygon_sensitivity.py (imports build_calls).
 
 Run from the repo root:  python scripts/s0/gate_proxy.py   (after scripts/s0/fetch_port_limit.py)
-Writes aggregates to scripts/s0/output/gate_proxy.txt (committed) and one row per crossing to
-data/interim/s0_gate_proxy_crossings.csv (gitignored; contains CRAFT_IDs).
-Parameters come from config/project.toml [s0_gate_proxy]; nothing is tuned here.
+Writes aggregates to scripts/s0/output/gate_proxy.txt (committed); per-call rows with CRAFT_IDs to
+data/interim/s0_gate_proxy_calls.csv (gitignored). Parameters: config/project.toml [s0_gate_proxy].
 """
 import sys
 import tomllib
@@ -17,128 +20,221 @@ from pathlib import Path
 import geopandas as gpd
 import numpy as np
 import pandas as pd
+import shapely
 
 from probe_s0 import MONTHS, ROOT, Tee, load, modal_positive, modal_type, type_class
 
 OUT = Path(__file__).resolve().parent / "output" / "gate_proxy.txt"
-CSV = ROOT / "data" / "interim" / "s0_gate_proxy_crossings.csv"
-LABEL = "provisional gate proxy, all departures, not the S0 gate"
+CSV = ROOT / "data" / "interim" / "s0_gate_proxy_calls.csv"
+LABEL = "provisional gate proxy v2, all departures, not the S0 gate"
+EPS = 1e-6
 
 
 def pct(n, d):
     return f"{n}/{d} ({n / d:.1%})" if d else f"{n}/0 (n/a)"
 
 
-def main():
-    cfg = tomllib.loads((ROOT / "config" / "project.toml").read_text(encoding="utf-8"))
-    p, pl, crs = cfg["s0_gate_proxy"], cfg["port_limit"], cfg["crs"]
-    tz = cfg["aggregation"]["timezone"]
-    sys.stdout = Tee(OUT)
-    print(f"==== {LABEL.upper()}")
-    print(f"port limit: {pl['source']} ({pl['path']}, {pl['crs']}); equivalence to handbook §4.3 [Unverified]")
-    print(f"params: {p}; aggregation timezone {tz}; geometric tests in {crs['distance']}")
+def load_config():
+    return tomllib.loads((ROOT / "config" / "project.toml").read_text(encoding="utf-8"))
 
+
+def load_inputs(cfg):
+    """AIS rows (both months) with projected x/y, and the working port-limit geometry, all in EPSG:7850."""
+    pl, crs = cfg["port_limit"], cfg["crs"]
     limit = gpd.read_file(ROOT / pl["path"]).set_crs(pl["crs"], allow_override=True).to_crs(crs["distance"])
-    limit_geom = limit.geometry.union_all()
-
     df = pd.concat([load(m)[0] for m in MONTHS], ignore_index=True)
-    data_start, data_end = df.TS.min(), df.TS.max()
-    print(f"AIS rows {len(df)} ({MONTHS[0]}..{MONTHS[-1]}), TS {data_start} -> {data_end} (taken as UTC)")
-
     pts = gpd.GeoSeries(gpd.points_from_xy(df.LON, df.LAT), crs=crs["ais_input"]).to_crs(crs["distance"])
-    minx, miny, maxx, maxy = limit_geom.bounds
-    cand = (pts.x.between(minx, maxx) & pts.y.between(miny, maxy)).to_numpy()
-    df["INSIDE"] = False
-    df.loc[cand, "INSIDE"] = pts[cand].within(limit_geom).to_numpy()
-    ever_in = df.loc[df.INSIDE, "CRAFT_ID"].unique()
-    # Keep ALL rows of vessels that were ever inside, so the first ping after an exit is never cut off.
-    v = df[df.CRAFT_ID.isin(ever_in)].sort_values(["CRAFT_ID", "TS"]).reset_index(drop=True)
+    df["X"], df["Y"] = pts.x.to_numpy(), pts.y.to_numpy()
+    return df, limit.geometry.union_all()
 
-    # Vessel attributes from rows inside the limit (both months), modal values; row TYPE kept unchanged.
-    ins = v[v.INSIDE]
-    vessels = ins.groupby("CRAFT_ID").agg(TYPE_MODAL=("TYPE", modal_type), L_MODAL=("LENGTH", modal_positive),
-                                         B_MODAL=("BEAM", modal_positive))
+
+def build_calls(df, geom, p):
+    """One row per call. Pure function of the AIS rows, the polygon and the parameters."""
+    shapely.prepare(geom)
+    inside = shapely.contains_xy(geom, df.X.to_numpy(), df.Y.to_numpy())
+    ever = np.unique(df.CRAFT_ID.to_numpy()[inside])
+    keep = df.CRAFT_ID.isin(ever).to_numpy()
+    v = df[keep].assign(INSIDE=inside[keep]).sort_values(["CRAFT_ID", "TS"]).reset_index(drop=True)
+
+    first_of_vessel = v.CRAFT_ID.ne(v.CRAFT_ID.shift())
+    v["RUN"] = (first_of_vessel | v.INSIDE.ne(v.INSIDE.shift())).cumsum()
+    runs = v[v.INSIDE].groupby("RUN").agg(
+        CRAFT_ID=("CRAFT_ID", "first"), START=("TS", "first"), END=("TS", "last"),
+        I0=("TS", lambda s: s.index[0]), I1=("TS", lambda s: s.index[-1])).sort_values(["CRAFT_ID", "START"])
+    # Merge runs of the same vessel separated by < merge_gap_hours outside.
+    gap_h = (runs.START - runs.groupby("CRAFT_ID").END.shift()).dt.total_seconds() / 3600
+    runs["CALL"] = (runs.CRAFT_ID.ne(runs.CRAFT_ID.shift()) | ~(gap_h < p["merge_gap_hours"])).cumsum()
+    calls = runs.groupby("CALL").agg(CRAFT_ID=("CRAFT_ID", "first"), I0=("I0", "first"), I1=("I1", "last"),
+                                     N_RUNS=("I0", "size"))
+
+    last_idx = v.groupby("CRAFT_ID").apply(lambda g: g.index[-1], include_groups=False)
+    first_idx = v.groupby("CRAFT_ID").apply(lambda g: g.index[0], include_groups=False)
+    rec = []
+    for c in calls.itertuples():
+        seg = v.loc[c.I0:c.I1]
+        ins = seg[seg.INSIDE]
+        has_in = c.I0 != first_idx[c.CRAFT_ID]          # a ping (outside) exists before the call
+        has_out = c.I1 != last_idx[c.CRAFT_ID]          # a ping (outside) exists after the call
+        rec.append(dict(
+            CRAFT_ID=c.CRAFT_ID, N_RUNS=c.N_RUNS, N_INSIDE=len(ins),
+            T_IN=ins.TS.iloc[0], T_OUT=ins.TS.iloc[-1],
+            INBOUND_OBSERVED=has_in, OUTBOUND_OBSERVED=has_out,
+            GAP_IN_MIN=(v.TS[c.I0] - v.TS[c.I0 - 1]).total_seconds() / 60 if has_in else np.nan,
+            GAP_OUT_MIN=(v.TS[c.I1 + 1] - v.TS[c.I1]).total_seconds() / 60 if has_out else np.nan,
+            ANY_STATIONARY=bool((ins.SPEED < p["stationary_kn"]).any()),
+            MIN_LAT=ins.LAT.min(), MIN_SOG=ins.SPEED.min(),
+            DRAUGHT_IN=ins.DRAUGHT.iloc[0], DRAUGHT_OUT=ins.DRAUGHT.iloc[-1],
+            DRAUGHT_MAX=ins.DRAUGHT.max(), FIRST_OUT=v.TS[c.I1 + 1] if has_out else pd.NaT,
+            I0=c.I0, I1=c.I1))
+    x = pd.DataFrame(rec)
+
+    vin = v[v.INSIDE]
+    vessels = vin.groupby("CRAFT_ID").agg(TYPE_MODAL=("TYPE", modal_type), L_MODAL=("LENGTH", modal_positive),
+                                          B_MODAL=("BEAM", modal_positive))
     vessels["TYPE_CLASS"] = vessels.TYPE_MODAL.map(type_class)
     vessels["UNCLASSIFIED_SIZE"] = vessels.L_MODAL.isna() | vessels.B_MODAL.isna()
+    x = x.join(vessels, on="CRAFT_ID")
+    x["ELIGIBLE"] = (x.TYPE_CLASS == p["type_class"]) & (x.L_MODAL >= p["min_modal_length_m"])
 
-    # Runs of consecutive inside pings per vessel; an exit is the last ping of a run followed by an outside ping.
-    v["RUN"] = (v.INSIDE != v.groupby("CRAFT_ID").INSIDE.shift()).cumsum()
-    nxt = v.groupby("CRAFT_ID")[["INSIDE", "TS"]].shift(-1)
-    rows = []
-    for (cid, run), r in v[v.INSIDE].groupby(["CRAFT_ID", "RUN"], sort=False):
-        last_i = r.index[-1]
-        has_next = pd.notna(nxt.at[last_i, "TS"])
-        rec = dict(CRAFT_ID=cid, RUN=run, RUN_START=r.TS.iloc[0], LAST_IN=r.TS.iloc[-1],
-                   RUN_STARTS_AT_DATA_START=r.index[0] == v.index[v.CRAFT_ID == cid][0],
-                   EXIT_OBSERVED=bool(has_next), FIRST_OUT=nxt.at[last_i, "TS"] if has_next else pd.NaT,
-                   ANY_STATIONARY=bool((r.SPEED < p["stationary_kn"]).any()), N_INSIDE=len(r))
-        for k in p["final_pings"]:
-            tail = r.DRAUGHT.iloc[-k:]
-            rec[f"DRAUGHT_POS_LAST{k}"] = bool((tail > 0).any())
-        rec["DRAUGHT_LAST"] = r.DRAUGHT.iloc[-1]
-        rows.append(rec)
-    x = pd.DataFrame(rows).join(vessels, on="CRAFT_ID")
-    x["GAP_MIN"] = (x.FIRST_OUT - x.LAST_IN).dt.total_seconds() / 60
-    nxt_run = x.groupby("CRAFT_ID").RUN_START.shift(-1)
-    x["REENTRY_H"] = (nxt_run - x.FIRST_OUT).dt.total_seconds() / 3600
-    x["REENTRY_CHECK_INCOMPLETE"] = x.REENTRY_H.isna() & (data_end - x.FIRST_OUT < pd.Timedelta(hours=p["reentry_hours"]))
+    reason = pd.Series(pd.NA, index=x.index, dtype="object")
+    reason[~x.INBOUND_OBSERVED] = "no inbound crossing observed (inside at vessel's first ping)"
+    reason[reason.isna() & ~x.OUTBOUND_OBSERVED] = "no outbound crossing observed (inside at vessel's last ping)"
+    reason[reason.isna() & ~x.ANY_STATIONARY] = f"transit (no inside ping < {p['stationary_kn']} kn)"
+    x["EXCLUDED"] = reason
+    x["AIS_GAP"] = (x.GAP_IN_MIN > p["crossing_gap_min"]) | (x.GAP_OUT_MIN > p["crossing_gap_min"])
+    return x, vin, v
 
-    # Population: eligible vessels
-    elig = (x.TYPE_CLASS == p["type_class"]) & (x.L_MODAL >= p["min_modal_length_m"])
-    print(f"\n[G1] inside runs (all vessels): {len(x)}; vessels ever inside: {len(vessels)}")
-    print(f"  runs by non-eligible vessels (context, not in proxy): {int((~elig).sum())}")
-    print(f"    TYPE_CLASS != {p['type_class']}: {int((x.TYPE_CLASS != p['type_class']).sum())}; "
-          f"cargo but unclassified_size: {int(((x.TYPE_CLASS == p['type_class']) & x.UNCLASSIFIED_SIZE).sum())}; "
-          f"cargo, sized, modal L < {p['min_modal_length_m']} m: "
-          f"{int(((x.TYPE_CLASS == p['type_class']) & ~x.UNCLASSIFIED_SIZE & (x.L_MODAL < p['min_modal_length_m'])).sum())}")
 
-    e = x[elig].copy()
-    print(f"\n[G2] eligible-vessel inside runs: {len(e)} (vessels {e.CRAFT_ID.nunique()})")
-    # Exclusion cascade; each run gets the first reason that applies.
-    reason = pd.Series(pd.NA, index=e.index, dtype="object")
-    reason[~e.EXIT_OBSERVED] = "no exit observed (inside at data end)"
-    reason[reason.isna() & (e.REENTRY_H < p["reentry_hours"])] = f"re-entry within {p['reentry_hours']} h (not a departure)"
-    reason[reason.isna() & ~e.ANY_STATIONARY] = f"transit (no inside ping < {p['stationary_kn']} kn)"
-    e["EXCLUDED"] = reason
-    print("  exclusions (first applicable reason):")
-    print(e.EXCLUDED.fillna("-- kept as departure").value_counts().to_string())
+def classify_update(c, res):
+    """Draught-update outcome for kept calls. Zero draught is no_draught (not testable), never a measured 0."""
+    out = pd.Series("unchanged", index=c.index, dtype="object")
+    out[(c.DRAUGHT_IN == 0) | c.DRAUGHT_IN.isna()] = "no_draught at inbound"
+    out[(out == "unchanged") & ((c.DRAUGHT_OUT == 0) | c.DRAUGHT_OUT.isna())] = "no_draught at outbound"
+    d = c.DRAUGHT_OUT - c.DRAUGHT_IN
+    t = out == "unchanged"
+    out[t & (d > res + EPS)] = "increased"
+    out[t & (d < -res - EPS)] = "decreased"
+    return out
 
-    d = e[e.EXCLUDED.isna()].copy()
-    d["AIS_GAP"] = d.GAP_MIN > p["crossing_gap_min"]
-    print(f"\n[G3] departures: {len(d)} (vessels {d.CRAFT_ID.nunique()})")
-    print(f"  flagged ais_gap at crossing (gap > {p['crossing_gap_min']} min, kept, reported): {pct(int(d.AIS_GAP.sum()), len(d))}")
-    print(f"  re-entry check incomplete (exit < {p['reentry_hours']} h before data end, kept): "
-          f"{int(d.REENTRY_CHECK_INCOMPLETE.sum())}")
-    print(f"  inside run began at the vessel's first ping in the data (arrival before {data_start:%Y-%m-%d}, kept): "
-          f"{int(d.RUN_STARTS_AT_DATA_START.sum())}")
-    print(f"  crossing gap minutes: {d.GAP_MIN.describe(percentiles=[.5, .95]).round(1).to_dict()}")
 
-    print(f"\n[G4] {LABEL}")
-    for k in p["final_pings"]:
-        col = f"DRAUGHT_POS_LAST{k}"
-        print(f"  draught > 0 in last {k} inside ping(s): {pct(int(d[col].sum()), len(d))}"
-              f"  | excl. ais_gap: {pct(int(d.loc[~d.AIS_GAP, col].sum()), int((~d.AIS_GAP).sum()))}")
-    print(f"  last inside ping draught == 0: {int((d.DRAUGHT_LAST == 0).sum())}; NaN: {int(d.DRAUGHT_LAST.isna().sum())}")
-    print("  Note: draught > 0 does not show the value was updated after loading (static_draught not tested here).")
+def main():
+    cfg = load_config()
+    p, tz = cfg["s0_gate_proxy"], cfg["aggregation"]["timezone"]
+    sys.stdout = Tee(OUT)
+    print(f"==== {LABEL.upper()}")
+    print(f"port limit: {cfg['port_limit']['source']}; equivalence to handbook §4.3 [Unverified]")
+    print(f"params: {p}; aggregation timezone {tz}; geometric tests in {cfg['crs']['distance']}")
 
-    print(f"\n[G5] by month of exit (FIRST_OUT), UTC and {tz}")
-    d["MONTH_UTC"] = d.FIRST_OUT.dt.strftime("%Y-%m")
-    d["MONTH_LOCAL"] = d.FIRST_OUT.dt.tz_localize("UTC").dt.tz_convert(tz).dt.strftime("%Y-%m")
-    k1 = f"DRAUGHT_POS_LAST{p['final_pings'][0]}"
-    for col in ["MONTH_UTC", "MONTH_LOCAL"]:
-        g = d.groupby(col)[k1].agg(["sum", "size"])
-        for m, r in g.iterrows():
-            print(f"  {col} {m}: departures {int(r['size'])}, draught > 0 in last ping {pct(int(r['sum']), int(r['size']))}")
-    start_l = data_start.tz_localize("UTC").tz_convert(tz)
-    end_l = data_end.tz_localize("UTC").tz_convert(tz)
-    print(f"  local data coverage {start_l} -> {end_l}: local {MONTHS[0]} misses its first "
-          f"{(start_l - start_l.normalize().replace(day=1)).total_seconds() / 3600:.1f} h; "
-          f"local month after {MONTHS[-1]} holds only {(end_l - end_l.normalize().replace(day=1)).total_seconds() / 3600:.1f} h. "
-          "Partial local months are incomplete, not comparable.")
+    df, geom = load_inputs(cfg)
+    print(f"AIS rows {len(df)} ({MONTHS[0]}..{MONTHS[-1]}), TS {df.TS.min()} -> {df.TS.max()} (taken as UTC)")
+    x, vin, v = build_calls(df, geom, p)
+
+    section = lambda t, s: print(f"\n[{t}] {s}")
+    section("V1", f"calls (all vessels): {len(x)}; vessels: {x.CRAFT_ID.nunique()}; "
+                  f"calls merged from >1 inside run: {int((x.N_RUNS > 1).sum())}")
+    ne = x[~x.ELIGIBLE]
+    print(f"  non-eligible calls (context, not in proxy): {len(ne)}: TYPE_CLASS != {p['type_class']} "
+          f"{int((ne.TYPE_CLASS != p['type_class']).sum())}; cargo unclassified_size "
+          f"{int(((ne.TYPE_CLASS == p['type_class']) & ne.UNCLASSIFIED_SIZE).sum())}; cargo, sized, L < "
+          f"{p['min_modal_length_m']} m {int(((ne.TYPE_CLASS == p['type_class']) & ~ne.UNCLASSIFIED_SIZE).sum())}")
+
+    e = x[x.ELIGIBLE].copy()
+    section("V2", f"eligible calls: {len(e)} (vessels {e.CRAFT_ID.nunique()}). Exclusions, first applicable reason:")
+    print(e.EXCLUDED.fillna("-- kept").value_counts().to_string())
+    k = e[e.EXCLUDED.isna()].copy()
+    print(f"  kept calls: {len(k)}; flagged ais_gap at either crossing (> {p['crossing_gap_min']} min, kept): "
+          f"{pct(int(k.AIS_GAP.sum()), len(k))}")
+
+    # Draught field properties, eligible vessels' inside rows.
+    rows = vin[vin.CRAFT_ID.isin(e.CRAFT_ID)].DRAUGHT
+    pos = rows[rows > 0]
+    tenths = np.abs(pos * 10 - np.round(pos * 10)) < 1e-4
+    uniq = np.sort(pos.unique())
+    section("V3", f"draught field, eligible vessels' inside rows (n={len(rows)})")
+    print(f"  zero {pct(int((rows == 0).sum()), len(rows))}; NaN {int(rows.isna().sum())}; "
+          f">= AIS cap {p['ais_cap_m']} m: {int((rows >= p['ais_cap_m'] - EPS).sum())}")
+    print(f"  positive values on a 0.1 m grid: {pct(int(tenths.sum()), len(pos))}; "
+          f"smallest step between distinct values: {np.diff(uniq).min():.3f} m")
+    res = 0.1 if tenths.all() else float(np.diff(uniq).min())
+    print(f"  resolution used: {res} m ({'all positive values on 0.1 m grid' if tenths.all() else 'min observed step'})")
+    whole = np.abs(pos - np.round(pos)) < 1e-4
+    half = np.abs(pos * 2 - np.round(pos * 2)) < 1e-4
+    print(f"  whole metres {pct(int(whole.sum()), len(pos))}; on 0.5 m {pct(int(half.sum()), len(pos))} "
+          f"(uniform on 0.1 m grid would give 10% / 20%)")
+    print("  top 10 values (share of positive rows): " + ", ".join(
+        f"{v:.1f}:{s:.2%}" for v, s in pos.round(1).value_counts(normalize=True).head(10).items()))
+
+    k["UPDATE"] = classify_update(k, res)
+    section("V4", LABEL)
+    print(k.UPDATE.value_counts().to_string())
+    testable = k[~k.UPDATE.str.startswith("no_draught")]
+    changed = testable.UPDATE.isin(["increased", "decreased"])
+    print(f"  ** draught changed by > {res} m between inbound and outbound: {pct(int(changed.sum()), len(testable))} "
+          f"of testable calls; {pct(int(changed.sum()), len(k))} of all kept calls")
+    ng = testable[~testable.AIS_GAP]
+    print(f"  excl. ais_gap calls: {pct(int(ng.UPDATE.isin(['increased', 'decreased']).sum()), len(ng))}")
+    dd = (testable.DRAUGHT_OUT - testable.DRAUGHT_IN)
+    print(f"  delta (out - in) m: {dd.describe(percentiles=[.05, .25, .5, .75, .95]).round(2).to_dict()}")
+    whole_in = np.abs(testable.DRAUGHT_IN - np.round(testable.DRAUGHT_IN)) < 1e-4
+    whole_out = np.abs(testable.DRAUGHT_OUT - np.round(testable.DRAUGHT_OUT)) < 1e-4
+    print(f"  testable calls with whole-metre inbound {pct(int(whole_in.sum()), len(testable))}, "
+          f"outbound {pct(int(whole_out.sum()), len(testable))}")
+
+    section("V5", "plausibility bounds, kept calls (counts; nothing corrected)")
+    print(f"  any inside draught >= AIS cap {p['ais_cap_m']} m: {int((k.DRAUGHT_MAX >= p['ais_cap_m'] - EPS).sum())}")
+    print(f"  outbound draught > {p['review_above_m']} m (above indicative outer-channel depth, review only): "
+          f"{int((k.DRAUGHT_OUT > p['review_above_m']).sum())}")
+    print(f"  draught decreased in port by > {res} m (unexpected at a loading port): "
+          f"{int((k.UPDATE == 'decreased').sum())}")
+    print(f"  outbound draught range: {k.DRAUGHT_OUT[k.DRAUGHT_OUT > 0].min()} - {k.DRAUGHT_OUT.max()} m")
+
+    section("V6", "by month of outbound crossing (FIRST_OUT): testable calls, changed")
+    t2 = testable.assign(CH=changed, MU=testable.FIRST_OUT.dt.strftime("%Y-%m"),
+                         ML=testable.FIRST_OUT.dt.tz_localize("UTC").dt.tz_convert(tz).dt.strftime("%Y-%m"))
+    for col, name in [("MU", "UTC"), ("ML", tz)]:
+        for m, g in t2.groupby(col):
+            print(f"  {name} {m}: {pct(int(g.CH.sum()), len(g))}")
+    print("  local Jul 2026 misses its first 8 h; local Sep 2026 holds only 8 h (UTC month files).")
+
+    tr = e[e.EXCLUDED.fillna("").str.startswith("transit")]
+    section("V7", f"transits (eligible, no inside ping < {p['stationary_kn']} kn): {len(tr)}")
+    south = tr.MIN_LAT < p["pilotage_lat"]
+    print(f"  entered south of handbook §8.1 pilotage latitude ({p['pilotage_lat']}): {pct(int(south.sum()), len(tr))}")
+    print("  southernmost latitude reached: " + pd.cut(tr.MIN_LAT, [-20.45, -20.3, -20.2, -20.1667, -20.1, -20.0, -19.9])
+          .value_counts().sort_index().to_string().replace("\n", "; "))
+    print(f"  inside pings per transit: {tr.N_INSIDE.describe(percentiles=[.5, .9]).round(1).to_dict()}")
+    print(f"  min SOG inside: {tr.MIN_SOG.describe(percentiles=[.1, .5, .9]).round(2).to_dict()}")
+    print(f"  transits with an outbound crossing that also had a stationary call by the same vessel: "
+          f"{int(tr.CRAFT_ID.isin(k.CRAFT_ID).sum())}")
+
+    # Where do transit vessels stop? Outside pings within 24 h after the transit (before the vessel re-enters).
+    # "Harbour" here = south of the pilotage latitude AND within the working polygon's bounding box (EPSG:7850),
+    # so other ports in the NW sub-area are not counted.
+    minx, miny, maxx, maxy = geom.bounds
+    in_bbox = lambda d: d.X.between(minx, maxx) & d.Y.between(miny, maxy) & (d.LAT < p["pilotage_lat"])
+    south_stop, any_stop, nxt = 0, 0, 0
+    for t in tr.itertuples():
+        if not t.OUTBOUND_OBSERVED:
+            continue
+        nxt += 1
+        after = v.loc[t.I1 + 1:]
+        after = after[(after.CRAFT_ID == t.CRAFT_ID) & (after.TS <= t.FIRST_OUT + pd.Timedelta(hours=24))]
+        after = after.loc[:after.index[after.INSIDE.to_numpy()].min() - 1] if after.INSIDE.any() else after
+        stop = after[after.SPEED < p["stationary_kn"]]
+        any_stop += len(stop) > 0
+        south_stop += bool(in_bbox(stop).any())
+    print(f"  of {nxt} transits with an outbound crossing: stationary OUTSIDE the polygon within 24 h after: "
+          f"{any_stop}; of which stationary south of the pilotage latitude within the polygon bbox (harbour area, "
+          f"outside the polygon): {south_stop}")
+    elig_rows = v[v.CRAFT_ID.isin(e.CRAFT_ID) & (v.SPEED < p["stationary_kn"]) & in_bbox(v)]
+    out_rows = elig_rows[~elig_rows.INSIDE]
+    print(f"  eligible vessels, stationary pings south of the pilotage latitude within the polygon bbox: {len(elig_rows)}; "
+          f"inside polygon {int(elig_rows.INSIDE.sum())}; outside: "
+          f"{len(out_rows)} rows, {out_rows.CRAFT_ID.nunique()} vessels")
 
     CSV.parent.mkdir(parents=True, exist_ok=True)
-    x.join(e[["EXCLUDED"]]).to_csv(CSV, index=False)
-    print(f"\nper-crossing table (gitignored): {CSV.relative_to(ROOT)}")
+    x.join(k[["UPDATE"]]).to_csv(CSV, index=False)
+    print(f"\nper-call table (gitignored): {CSV.relative_to(ROOT)}")
 
 
 if __name__ == "__main__":

@@ -266,6 +266,12 @@ def main():
     print(f"smallest L_jul among matched pairs above that: {close[close.same_id & (close.L_jul > lmax)].L_jul.min()}")
     print("matched pairs with identical L/B:", int((close.same_id & (close.L_jul == close.L_aug)
                                                     & (close.B_jul == close.B_aug)).sum()))
+    # Class and size from the Aug-side vessel (P8 table); both sides must agree for a matched pair.
+    cls = close.aug_nn_id.map(vessels.TYPE_CLASS)
+    lm = close.aug_nn_id.map(vessels.L_MODAL)
+    big_cargo = (cls == "cargo") & (lm >= BIG_M)
+    print(f"pairs whose Aug-side vessel is modal TYPE_CLASS cargo and modal L >= {BIG_M} m: {int(big_cargo.sum())} "
+          f"of {len(close)}; of these same CRAFT_ID: {int((big_cargo & close.same_id).sum())}")
 
 
 if __name__ == "__main__":

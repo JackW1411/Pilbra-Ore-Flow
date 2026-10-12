@@ -1,38 +1,58 @@
-==== PROVISIONAL GATE PROXY, ALL DEPARTURES, NOT THE S0 GATE
-port limit: SLIP LGATE-243 Port Authorities, objectid 12 'PORT HEDLAND PORT AUTHORITY' (data/raw/slip_lgate243/port_hedland_port_authority.geojson, EPSG:7844); equivalence to handbook §4.3 [Unverified]
-params: {'min_modal_length_m': 150, 'type_class': 'cargo', 'stationary_kn': 0.5, 'reentry_hours': 6, 'crossing_gap_min': 60, 'final_pings': [1, 4]}; aggregation timezone Australia/Perth; geometric tests in EPSG:7850
+==== PROVISIONAL GATE PROXY V2, ALL DEPARTURES, NOT THE S0 GATE
+port limit: SLIP LGATE-243 Port Authorities, objectid 12 'PORT HEDLAND PORT AUTHORITY'; equivalence to handbook §4.3 [Unverified]
+params: {'min_modal_length_m': 150, 'type_class': 'cargo', 'stationary_kn': 0.5, 'merge_gap_hours': 6, 'crossing_gap_min': 60, 'ais_cap_m': 25.5, 'review_above_m': 18.0, 'pilotage_lat': -20.166667, 'buffers_m': [-2000, -1000, -500, 0, 500, 1000, 2000]}; aggregation timezone Australia/Perth; geometric tests in EPSG:7850
 AIS rows 1885006 (2026-07..2026-08), TS 2026-07-01 00:00:05 -> 2026-08-31 23:59:50 (taken as UTC)
 
-[G1] inside runs (all vessels): 1933; vessels ever inside: 583
-  runs by non-eligible vessels (context, not in proxy): 1298
-    TYPE_CLASS != cargo: 1277; cargo but unclassified_size: 2; cargo, sized, modal L < 150 m: 19
+[V1] calls (all vessels): 993; vessels: 583; calls merged from >1 inside run: 98
+  non-eligible calls (context, not in proxy): 362: TYPE_CLASS != cargo 341; cargo unclassified_size 2; cargo, sized, L < 150 m 19
 
-[G2] eligible-vessel inside runs: 635 (vessels 425)
-  exclusions (first applicable reason):
+[V2] eligible calls: 631 (vessels 425). Exclusions, first applicable reason:
 EXCLUDED
--- kept as departure                     501
-transit (no inside ping < 0.5 kn)         95
-no exit observed (inside at data end)     35
-re-entry within 6 h (not a departure)      4
+-- kept                                                         469
+transit (no inside ping < 0.5 kn)                                93
+no outbound crossing observed (inside at vessel's last ping)     35
+no inbound crossing observed (inside at vessel's first ping)     34
+  kept calls: 469; flagged ais_gap at either crossing (> 60 min, kept): 0/469 (0.0%)
 
-[G3] departures: 501 (vessels 392)
-  flagged ais_gap at crossing (gap > 60 min, kept, reported): 0/501 (0.0%)
-  re-entry check incomplete (exit < 6 h before data end, kept): 3
-  inside run began at the vessel's first ping in the data (arrival before 2026-07-01, kept): 32
-  crossing gap minutes: {'count': 501.0, 'mean': 15.8, 'std': 3.6, 'min': 4.8, '50%': 15.0, '95%': 23.4, 'max': 45.0}
+[V3] draught field, eligible vessels' inside rows (n=202580)
+  zero 99/202580 (0.0%); NaN 0; >= AIS cap 25.5 m: 0
+  positive values on a 0.1 m grid: 202481/202481 (100.0%); smallest step between distinct values: 0.100 m
+  resolution used: 0.1 m (all positive values on 0.1 m grid)
+  whole metres 21549/202481 (10.6%); on 0.5 m 49956/202481 (24.7%) (uniform on 0.1 m grid would give 10% / 20%)
+  top 10 values (share of positive rows): 8.7:8.29%, 8.6:7.96%, 8.5:7.04%, 8.8:6.21%, 8.9:5.45%, 9.0:4.51%, 8.2:3.62%, 8.4:3.21%, 10.5:2.25%, 7.8:2.20%
 
-[G4] provisional gate proxy, all departures, not the S0 gate
-  draught > 0 in last 1 inside ping(s): 498/501 (99.4%)  | excl. ais_gap: 498/501 (99.4%)
-  draught > 0 in last 4 inside ping(s): 501/501 (100.0%)  | excl. ais_gap: 501/501 (100.0%)
-  last inside ping draught == 0: 3; NaN: 0
-  Note: draught > 0 does not show the value was updated after loading (static_draught not tested here).
+[V4] provisional gate proxy v2, all departures, not the S0 gate
+UPDATE
+increased                 404
+unchanged                  52
+decreased                  11
+no_draught at outbound      2
+  ** draught changed by > 0.1 m between inbound and outbound: 415/467 (88.9%) of testable calls; 415/469 (88.5%) of all kept calls
+  excl. ais_gap calls: 415/467 (88.9%)
+  delta (out - in) m: {'count': 467.0, 'mean': 7.07, 'std': 3.17, 'min': -1.3, '5%': 0.0, '25%': 6.8, '50%': 8.2, '75%': 9.1, '95%': 9.9, 'max': 10.9}
+  testable calls with whole-metre inbound 52/467 (11.1%), outbound 35/467 (7.5%)
 
-[G5] by month of exit (FIRST_OUT), UTC and Australia/Perth
-  MONTH_UTC 2026-07: departures 238, draught > 0 in last ping 235/238 (98.7%)
-  MONTH_UTC 2026-08: departures 263, draught > 0 in last ping 263/263 (100.0%)
-  MONTH_LOCAL 2026-07: departures 236, draught > 0 in last ping 233/236 (98.7%)
-  MONTH_LOCAL 2026-08: departures 261, draught > 0 in last ping 261/261 (100.0%)
-  MONTH_LOCAL 2026-09: departures 4, draught > 0 in last ping 4/4 (100.0%)
-  local data coverage 2026-07-01 08:00:05+08:00 -> 2026-09-01 07:59:50+08:00: local 2026-07 misses its first 8.0 h; local month after 2026-08 holds only 8.0 h. Partial local months are incomplete, not comparable.
+[V5] plausibility bounds, kept calls (counts; nothing corrected)
+  any inside draught >= AIS cap 25.5 m: 0
+  outbound draught > 18.0 m (above indicative outer-channel depth, review only): 134
+  draught decreased in port by > 0.1 m (unexpected at a loading port): 11
+  outbound draught range: 6.8 - 18.9 m
 
-per-crossing table (gitignored): data\interim\s0_gate_proxy_crossings.csv
+[V6] by month of outbound crossing (FIRST_OUT): testable calls, changed
+  UTC 2026-07: 177/203 (87.2%)
+  UTC 2026-08: 238/264 (90.2%)
+  Australia/Perth 2026-07: 176/201 (87.6%)
+  Australia/Perth 2026-08: 235/262 (89.7%)
+  Australia/Perth 2026-09: 4/4 (100.0%)
+  local Jul 2026 misses its first 8 h; local Sep 2026 holds only 8 h (UTC month files).
+
+[V7] transits (eligible, no inside ping < 0.5 kn): 93
+  entered south of handbook §8.1 pilotage latitude (-20.166667): 89/93 (95.7%)
+  southernmost latitude reached: MIN_LAT; (-20.45, -20.3]     89; (-20.3, -20.2]       0; (-20.2, -20.167]     0; (-20.167, -20.1]     0; (-20.1, -20.0]       1; (-20.0, -19.9]       3
+  inside pings per transit: {'count': 93.0, 'mean': 13.9, 'std': 2.7, 'min': 1.0, '50%': 14.0, '90%': 16.0, 'max': 18.0}
+  min SOG inside: {'count': 93.0, 'mean': 2.62, 'std': 1.63, 'min': 0.5, '10%': 0.8, '50%': 3.0, '90%': 3.8, 'max': 11.4}
+  transits with an outbound crossing that also had a stationary call by the same vessel: 73
+  of 93 transits with an outbound crossing: stationary OUTSIDE the polygon within 24 h after: 44; of which stationary south of the pilotage latitude within the polygon bbox (harbour area, outside the polygon): 26
+  eligible vessels, stationary pings south of the pilotage latitude within the polygon bbox: 83445; inside polygon 73711; outside: 9734 rows, 66 vessels
+
+per-call table (gitignored): data\interim\s0_gate_proxy_calls.csv

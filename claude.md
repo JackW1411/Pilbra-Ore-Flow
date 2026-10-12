@@ -45,9 +45,10 @@ Stop the draught method if, on held-out data: usable-draught coverage < 60%, OR 
 Fails only the last test -> ship the call-count version and say so. Timebox: 4 weeks.
 
 ## Open items (verify, do not assume)
-- AMSA release lag (partial, see STATUS.md); PPA berth-level granularity; PPA data licence (AMSA licence resolved, see STATUS.md log).
+- AMSA release lag (partial, see STATUS.md); PPA statistics licence/terms (AMSA licence resolved; PPA granularity resolved, see STATUS.md log).
+- [Unverified] PPA month basis and timezone: commodity files filter on cargo-complete date (2026) vs departure date (2015); dates carry no timezone.
 - [Unverified] Berth polygon source. PPA handbook gives no coordinates (§6.13-6.24). Candidates: OSM `seamark:type=berth` (19 named polygons, ODbL, naming/accuracy unverified), AHO AUS 53 / ENC PT613, or digitised from imagery with the method documented. Do not invent polygons. Blocks the S0 gate. See STATUS.md "Boundary sources".
-- [Unverified] Port limit: working limit is SLIP LGATE-243 (adopted 2026-10-12); equivalence to handbook §4.3 and the LGATE-243 licence terms are unverified.
+- [Unverified] Port limit: working limit is SLIP LGATE-243 (adopted 2026-10-12); equivalence to handbook §4.3 and the LGATE-243 licence terms are unverified. It excludes a harbour patch where ships dwell (STATUS.md); treatment undecided.
 - [Unverified] Whether PPA monthly statistics use local (AWST) or UTC months.
 - [Unverified] Which Hedland berths are multi-user (handbook §6.16 PH4 indicates yes; keyword scan only), and the PPA published cargo/berth list.
 - Cape Lambert jurisdiction and whether PPA publishes its throughput (the "no PPA validation" claim is unverified).
