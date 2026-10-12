@@ -11,3 +11,9 @@ buffer_m  area_km2 calls_all eligible  kept transit no_in no_out ais_gap testabl
     1000    1480.4       746      569   489       7    36     37       0      487     466     1     0  +20 (+4.3%)
     2000    1679.1       758      580   490      17    36     37       1      484     463     1     0  +21 (+4.5%)
 changed = draught differs by > 0.1 m between inbound and outbound (resolution from gate_proxy.txt V3).
+
+==== pilotage-line boundary vs working limit (+500 m); config unchanged
+clip area 746.9 km2 vs working 1380.5 km2
+difference (pilotage-line minus working limit): calls_all +48, eligible +53, kept +95, transit -3, no_in -18, no_out -21, ais_gap +0, testable +93, changed +9
+difference in median kept-call duration inside (h): -26.6
+difference in changed share of testable: -13.8%
