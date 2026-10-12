@@ -75,6 +75,40 @@ def test_month_files_roundtrip(tmp_path):
         assert (pyogrio.read_dataframe(p, read_geometry=False).craft_id == cid).any()
 
 
+def _outside_spells(df):
+    """For each outside run between two inside pings: the inside-to-inside gap in hours (the quantity a
+    fragment-merge rule with gap G compares against) and the number of outside pings in the run."""
+    df = df.assign(t=_ts(df), ins=synthetic.inside_port_limit(df)).sort_values("t").reset_index(drop=True)
+    first_in, last_in = df.index[df.ins].min(), df.index[df.ins].max()
+    mid = df.loc[first_in:last_in]
+    run = (mid.ins != mid.ins.shift()).cumsum()
+    spans, counts = [], []
+    for _, g in mid[~mid.ins].groupby(run[~mid.ins]):
+        spans.append((df.t[g.index[-1] + 1] - df.t[g.index[0] - 1]).total_seconds() / 3600)
+        counts.append(len(g))
+    return spans, counts
+
+
+def test_boundary_chatter_crosses_repeatedly_with_short_outside_spells():
+    df, truth = synthetic.scenarios()["boundary_chatter"]
+    spans, counts = _outside_spells(df)
+    assert len(spans) >= synthetic.CHATTER_CROSSINGS            # several in/out alternations
+    assert max(spans) < 1.0 and min(counts) >= 1                 # gaps below the assumed G, each observed
+    assert truth.expected_calls == 1 and truth.expected_laden_departures == 1
+
+
+def test_long_stay_never_at_a_berth_and_lasts_days(world):
+    df, truth = synthetic.scenarios()["long_stay_near_boundary"]
+    import shapely
+    x, y = synthetic._to_metric.transform(df.longitude.to_numpy(), df.latitude.to_numpy())
+    near_berth = shapely.contains_xy(world["berths"].geometry.buffer(500).union_all(), x, y)
+    assert not near_berth.any()
+    spans, _ = _outside_spells(df)
+    t, ins = _ts(df), synthetic.inside_port_limit(df)
+    assert (t[ins].max() - t[ins].min()).total_seconds() / 3600 >= synthetic.LONG_STAY_DAYS * 24 - 12
+    assert len(spans) >= 2 and truth.must_fail and truth.expected_laden_departures == 0
+
+
 def test_edge_rows_cover_cases():
     e = synthetic.edge_rows()
     assert e.type.isna().any() and (e.length == 0).any() and (e.draught == 0).any()

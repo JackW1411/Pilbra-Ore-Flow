@@ -37,12 +37,17 @@ SHORT_DWELL_H = 1.0
 LONG_DWELL_H = 30.0
 REENTRY_AFTER_H = 2.0
 GAP_AT_CROSSING_H = 3.0
+CHATTER_CROSSINGS = 4                   # outside excursions before the vessel settles inside
+CHATTER_OUTSIDE_DWELL_H = 0.3           # with moving and ping spacing: inside-to-inside gaps of ~0.6-0.9 h
+LONG_STAY_DAYS = 4
+LONG_STAY_SWING_H = 6.0                 # alternates 6 h just inside / 6 h just outside the limit
 ASSUMED_RANGES = {
     "D_min_h": f"> {SHORT_DWELL_H} and < {LONG_DWELL_H}",
     "T_max_h": "> 1.5 (berth to port-limit exit takes ~1 h at 10 kn)",
     "X_h": f"> {REENTRY_AFTER_H} and <= 6 (tracks are observed ~6 h past the exit)",
     "SOG_kn": "> 0.3 (dwell SOG noise stays below 0.3 kn) and < 5 (transit speed >= 8 kn)",
     "crossing_gap_min": f"< {GAP_AT_CROSSING_H * 60:.0f}",
+    "G_h": "> 1.0 (boundary_chatter inside-to-inside gaps are 0.6-0.9 h and must merge into one call)",
 }
 
 _to_metric = Transformer.from_crs(CRS_AIS, CRS_METRIC, always_xy=True)
@@ -188,6 +193,7 @@ class Truth:
     threshold_dependent: frozenset = frozenset()  # flags whose expectation needs an unfrozen threshold
     docs_case: int | None = None                # numbered must-fail case in docs/laden_departure.md
     notes: str = ""
+    expected_calls: int | None = None           # set only where docs/laden_departure.md fixes the call count
 
 
 CARGO = "Cargo ship - All"
@@ -278,6 +284,32 @@ def scenarios(seed: int = SEED) -> dict[str, tuple[pd.DataFrame, Truth]]:
     add(_laden_track(v, "2026-07-30 12:00", rng).depart().frame(),
         Truth("month_boundary_call", v.craft_id, 1, False,
               notes="arrives 30 Jul UTC, loader dwell spans 31 Jul/1 Aug, exits 1 Aug; needs both month files"))
+
+    # docs/laden_departure.md: "Fragments are merged across gaps < G h" -> one call.
+    v = _cape(12)
+    tr = Track(v, "2026-08-14 00:00", SEA, 8.6, rng)
+    tr.move((0.0, 10_300.0))
+    for _ in range(CHATTER_CROSSINGS):
+        tr.move((0.0, 9_700.0), knots=2).dwell(0.5).move((0.0, 10_300.0), knots=2).dwell(CHATTER_OUTSIDE_DWELL_H)
+    tr.move(ANCHORAGE).dwell(10).move(_centre("SYN_LOADER_1"), knots=8)
+    tr.dwell(LONG_DWELL_H, draught_after=17.6, update_at_h=LONG_DWELL_H - 2)
+    add(tr.depart().frame(),
+        Truth("boundary_chatter", v.craft_id, 1, False, expected_calls=1,
+              notes=f"crosses the port limit {2 * CHATTER_CROSSINGS + 1} times in ~5 h (inside-to-inside gaps <= ~0.9 h < G), "
+                    "then anchorage -> loader 30 h -> exit; one call, one laden departure"))
+
+    # docs/laden_departure.md rule (a): no loader dwell -> not a laden departure.
+    v = _cape(13)
+    tr = Track(v, "2026-08-16 00:00", SEA, 8.4, rng)
+    tr.move((3_000.0, 9_600.0))
+    for _ in range(int(LONG_STAY_DAYS * 24 / (2 * LONG_STAY_SWING_H))):
+        tr.dwell(LONG_STAY_SWING_H, jitter_m=60).move((3_000.0, 10_400.0), knots=1)
+        tr.dwell(LONG_STAY_SWING_H, jitter_m=60).move((3_000.0, 9_600.0), knots=1)
+    add(tr.depart().frame(),
+        Truth("long_stay_near_boundary", v.craft_id, 0, True,
+              threshold_dependent=frozenset({"static_draught", "light_departure"}),
+              notes=f"loiters {LONG_STAY_DAYS} days within 400 m of the port limit, 6 h in / 6 h out, never at a "
+                    "berth; must not produce a laden departure (rule a). Call count depends on G: not asserted"))
     return out
 
 

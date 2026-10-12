@@ -1,6 +1,7 @@
-checked 2026-10-12 06:54 UTC  source https://overpass-api.de/api/interpreter
+checked 2026-10-12 08:29 UTC  source https://overpass-api.de/api/interpreter
 bbox (S,W,N,E) (-20.42, 118.35, -19.9, 118.76); filters ['["man_made"="pier"]', '["man_made"="quay"]', '["man_made"="breakwater"]', '["seamark:type"="berth"]', '["seamark:type"="mooring"]', '["seamark:type"="harbour"]', '["seamark:type"="anchorage"]', '["seamark:type"="anchor_berth"]', '["harbour"]', '["mooring"]', '["waterway"="dock"]', '["landuse"="port"]', '["industrial"="port"]']
 failed endpoints before success: none
+raw response saved (gitignored): data/raw/osm/osm_check_20261012T082921Z.json sha256 224bb14992e4d9ba576abd7249b5c09f21f8432bb63b4d8b3621dda557f2f24e (osm_base 2026-10-12T08:27:35Z)
 
 [O1] elements returned: 83 by type {'node': 1, 'way': 81, 'relation': 1}
   man_made: {'pier': 53, 'breakwater': 6}

@@ -1,4 +1,5 @@
-checked 2026-10-12 07:28 UTC source https://overpass.private.coffee/api/interpreter; failed before success: ['https://overpass-api.de/api/interpreter: HTTP Error 504: Gateway Timeout']
+checked 2026-10-12 08:27 UTC source https://overpass-api.de/api/interpreter; failed before success: none
+raw response saved (gitignored): data/raw/osm/osm_berths_20261012T082713Z.json sha256 2026e173c0c189bd7d99414c1eecd380c84ddc30a4c2bb79b5bb7e740fd33fc4 (osm_base 2026-10-12T08:25:30Z)
 patch (lon/lat, from config harbour_gap_patch, gate_proxy V7): [118.5838, -20.3274, 118.5866, -20.324]
 
 [N1] OSM berth features: 19; intersecting the patch: 2
