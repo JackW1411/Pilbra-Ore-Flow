@@ -1,5 +1,9 @@
 # Project configuration. Read by scripts/s0/*; later by src/pilbara_oreflow/config.
 
+# Single data-location setting. Absolute path, or relative to the repo root. Holds raw/, interim/, raw/osm/.
+# Planned target outside OneDrive: C:/ore-flow-data (not yet created; data not yet moved).
+DATA_ROOT = "data"
+
 [crs]
 distance = "EPSG:7850"          # GDA2020 / MGA zone 50 (Fixed decision). All geometric tests run here.
 ais_input = "EPSG:4326"         # AMSA shapefile .prj (P1)
@@ -15,7 +19,7 @@ timezone = "Australia/Perth"
 source = "SLIP LGATE-243 Port Authorities, objectid 12 'PORT HEDLAND PORT AUTHORITY'"
 url = "https://public-services.slip.wa.gov.au/public/rest/services/SLIP_Public_Services/Boundaries/MapServer/12"
 objectid = 12
-path = "data/raw/slip_lgate243/port_hedland_port_authority.geojson"
+path = "raw/slip_lgate243/port_hedland_port_authority.geojson"   # relative to DATA_ROOT
 crs = "EPSG:7844"               # GDA2020 geographic, as requested from the service (outSR)
 # Provisional working limit = SLIP polygon buffered by buffer_m in EPSG:7850 (Jack, 2026-10-12). Hard cap 500 m.
 # Reason: the unbuffered polygon excludes a harbour patch where ships dwell (gate_proxy V7). Full sensitivity

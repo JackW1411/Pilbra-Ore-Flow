@@ -71,4 +71,4 @@ no_draught at outbound      2
   unchanged: inbound draught {'count': 21.0, 'mean': 9.2, 'std': 1.4, 'min': 6.9, '50%': 8.9, 'max': 11.9}
   unchanged calls merged from >1 inside run: 0
 
-per-call table (gitignored): data\interim\s0_gate_proxy_calls.csv
+per-call table (gitignored): DATA_ROOT/interim/s0_gate_proxy_calls.csv

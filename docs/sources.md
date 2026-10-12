@@ -24,11 +24,29 @@ Retrieval dates are UTC dates of the fetch. Files marked "not committed" live un
 ## SLIP LGATE-243 Port Authorities (working port limit)
 - Service: https://public-services.slip.wa.gov.au/public/rest/services/SLIP_Public_Services/Boundaries/MapServer/12, objectid 12 "PORT HEDLAND PORT AUTHORITY", requested as GeoJSON with outSR 7844 (GDA2020).
 - Catalogue: data.wa.gov.au package `port-authorities`. Licence "Custom (Other)", **terms not yet read**, so the geometry is not committed.
-- Retrieved: 2026-10-12 06:55 UTC by `scripts/s0/fetch_port_limit.py`. Saved to `data/raw/slip_lgate243/port_hedland_port_authority.geojson` (338,091 bytes, sha256 `3274c33b0473268fe1f029632bab47ab3a450c5298d4504e2b99565369365b4b`).
+- Retrieved: 2026-10-12 06:55 UTC by `scripts/s0/fetch_port_limit.py`. Saved to `DATA_ROOT/raw/slip_lgate243/port_hedland_port_authority.geojson` (338,091 bytes, sha256 `3274c33b0473268fe1f029632bab47ab3a450c5298d4504e2b99565369365b4b`).
 
 ## PPA Port Hedland port statistics (read only, nothing downloaded)
 - Page: https://www.pilbaraports.com.au/ports/port-of-port-hedland/about-port-of-hedland/port-statistics-reports (read in Chrome 2026-10-12)
 - Monthly PDFs, January 2015 to August 2026: "cargo by destination" and "cargo, GRT and DWT statistics by commodity type". Files read: August 2026 (both) and January 2015 (commodity). No hashes recorded because nothing was stored. Licence/terms not read.
 
 ## OpenStreetMap (Overpass API)
-- https://overpass-api.de/api/interpreter, queried 2026-10-12 06:54 UTC by `scripts/s0/osm_check.py`. Tags and node counts only; no geometry stored. Data (c) OpenStreetMap contributors, ODbL.
+- https://overpass-api.de/api/interpreter, queried from 2026-10-12 06:54 UTC by `scripts/s0/osm_check.py` and `osm_nearest_berth.py` (mirrors as fallback). Committed outputs hold tags, counts, names and distances only. From 2026-10-12 08:26 UTC every raw response (incl. berth geometry) and its query are saved to `DATA_ROOT/raw/osm/` (gitignored); each output records file, sha256 and the mirror's `osm_base` timestamp. Data (c) OpenStreetMap contributors, ODbL.
+
+## Licences: Jack's reading
+Recorded only from Jack's own statements. Nothing here is a summary or interpretation of a licence.
+
+### AMSA vessel tracking data
+- Documents: https://www.operations.amsa.gov.au/spatial/DataServices/Copyright and https://www.operations.amsa.gov.au/spatial/DataServices/Disclaimer
+- Version or date: not recorded
+- Status: **not yet read by me** (Jack)
+
+### SLIP LGATE-243 Port Authorities
+- Catalogue page: https://catalogue.data.wa.gov.au/dataset/port-authorities (licence field "Custom (Other)"; licence document URL not identified)
+- Version or date: not recorded
+- Status: **not yet read by me** (Jack)
+
+### PPA port statistics
+- Terms document: not identified
+- Version or date: not recorded
+- Status: **not yet read by me** (Jack)

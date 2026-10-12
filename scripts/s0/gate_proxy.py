@@ -11,10 +11,9 @@ transit breakdown. The polygon sensitivity test is scripts/s0/polygon_sensitivit
 
 Run from the repo root:  python scripts/s0/gate_proxy.py   (after scripts/s0/fetch_port_limit.py)
 Writes aggregates to scripts/s0/output/gate_proxy.txt (committed); per-call rows with CRAFT_IDs to
-data/interim/s0_gate_proxy_calls.csv (gitignored). Parameters: config/project.toml [s0_gate_proxy].
+DATA_ROOT/interim/s0_gate_proxy_calls.csv (gitignored). Parameters: config/project.toml [s0_gate_proxy].
 """
 import sys
-import tomllib
 from pathlib import Path
 
 import geopandas as gpd
@@ -22,20 +21,17 @@ import numpy as np
 import pandas as pd
 import shapely
 
+from paths import DATA, load_config  # noqa: F401  (load_config re-exported for other scripts)
 from probe_s0 import MONTHS, ROOT, Tee, load, modal_positive, modal_type, type_class
 
 OUT = Path(__file__).resolve().parent / "output" / "gate_proxy.txt"
-CSV = ROOT / "data" / "interim" / "s0_gate_proxy_calls.csv"
+CSV = DATA / "interim" / "s0_gate_proxy_calls.csv"
 LABEL = "provisional gate proxy v2, all departures, not the S0 gate"
 EPS = 1e-6
 
 
 def pct(n, d):
     return f"{n}/{d} ({n / d:.1%})" if d else f"{n}/0 (n/a)"
-
-
-def load_config():
-    return tomllib.loads((ROOT / "config" / "project.toml").read_text(encoding="utf-8"))
 
 
 def working_limit(raw_geom, cfg):
@@ -49,7 +45,7 @@ def working_limit(raw_geom, cfg):
 def load_inputs(cfg):
     """AIS rows (both months) with projected x/y, and the UNBUFFERED SLIP polygon, all in EPSG:7850."""
     pl, crs = cfg["port_limit"], cfg["crs"]
-    limit = gpd.read_file(ROOT / pl["path"]).set_crs(pl["crs"], allow_override=True).to_crs(crs["distance"])
+    limit = gpd.read_file(DATA / pl["path"]).set_crs(pl["crs"], allow_override=True).to_crs(crs["distance"])
     df = pd.concat([load(m)[0] for m in MONTHS], ignore_index=True)
     pts = gpd.GeoSeries(gpd.points_from_xy(df.LON, df.LAT), crs=crs["ais_input"]).to_crs(crs["distance"])
     df["X"], df["Y"] = pts.x.to_numpy(), pts.y.to_numpy()
@@ -262,7 +258,7 @@ def main():
 
     CSV.parent.mkdir(parents=True, exist_ok=True)
     x.join(k[["UPDATE"]]).to_csv(CSV, index=False)
-    print(f"\nper-call table (gitignored): {CSV.relative_to(ROOT)}")
+    print(f"\nper-call table (gitignored): DATA_ROOT/{CSV.relative_to(DATA).as_posix()}")
 
 
 if __name__ == "__main__":

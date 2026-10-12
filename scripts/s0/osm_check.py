@@ -2,7 +2,7 @@
 
 Run from the repo root:  python scripts/s0/osm_check.py
 Writes scripts/s0/output/osm_check.txt (overwrites). OSM data (c) OpenStreetMap contributors, ODbL.
-Every raw Overpass response is saved, with its query text, to data/raw/osm/ (gitignored); path and sha256 are
+Every raw Overpass response is saved, with its query text, to DATA_ROOT/raw/osm/ (gitignored); path and sha256 are
 printed in the output so a run can be tied to the exact response.
 """
 import hashlib
@@ -13,8 +13,10 @@ from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
 
+from paths import DATA
+
 OUT = Path(__file__).resolve().parent / "output" / "osm_check.txt"
-RAW_DIR = Path(__file__).resolve().parents[2] / "data" / "raw" / "osm"
+RAW_DIR = DATA / "raw" / "osm"
 ENDPOINTS = ["https://overpass-api.de/api/interpreter", "https://overpass.private.coffee/api/interpreter",
              "https://overpass.kumi.systems/api/interpreter"]
 # Query bbox = SLIP LGATE-243 Port Hedland extent (S1 in sources_check.txt), rounded outward. Search area only.
@@ -30,7 +32,7 @@ KEYS = ["man_made", "seamark:type", "harbour", "mooring", "waterway", "landuse",
 
 def overpass(query: str, tag: str):
     """Run an Overpass query against ENDPOINTS in order. Saves the raw response and the query text to
-    data/raw/osm/<tag>_<UTC>.json / .query.txt. Returns (elements, url, errors, saved_path, 'sha256 (osm_base <timestamp>)')."""
+    DATA_ROOT/raw/osm/<tag>_<UTC>.json / .query.txt. Returns (elements, url, errors, saved_path, 'sha256 (osm_base <timestamp>)')."""
     errors = []
     for url in ENDPOINTS:
         req = urllib.request.Request(url, data=urllib.parse.urlencode({"data": query}).encode(),
@@ -61,7 +63,7 @@ def main():
     out = [f"checked {datetime.now(timezone.utc):%Y-%m-%d %H:%M UTC}  source {url}",
            f"bbox (S,W,N,E) {BBOX}; filters {FILTERS}",
            f"failed endpoints before success: {errors or 'none'}",
-           f"raw response saved (gitignored): {saved.relative_to(RAW_DIR.parents[2]).as_posix()} sha256 {sha}",
+           f"raw response saved (gitignored): DATA_ROOT/{saved.relative_to(DATA).as_posix()} sha256 {sha}",
            f"\n[O1] elements returned: {len(els)} by type {dict(Counter(e['type'] for e in els))}"]
     for k in KEYS[:-2]:
         c = Counter(e["tags"][k] for e in els if k in e.get("tags", {}))

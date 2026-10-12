@@ -2,7 +2,7 @@
 output holds only names, OSM ids and distances.
 
 Run from the repo root:  python scripts/s0/osm_nearest_berth.py
-Writes scripts/s0/output/osm_nearest_berth.txt. The raw Overpass response and query are saved to data/raw/osm/
+Writes scripts/s0/output/osm_nearest_berth.txt. The raw Overpass response and query are saved to DATA_ROOT/raw/osm/
 (gitignored) via osm_check.overpass; the output records the file and sha256.
 OSM data (c) OpenStreetMap contributors, ODbL. Mapping OSM names to handbook berths is [Unverified].
 """
@@ -14,7 +14,8 @@ import geopandas as gpd
 from shapely.geometry import Polygon, box
 
 from gate_proxy import load_config
-from osm_check import BBOX, RAW_DIR, overpass
+from osm_check import BBOX, overpass
+from paths import DATA
 from probe_s0 import Tee
 
 OUT = Path(__file__).resolve().parent / "output" / "osm_nearest_berth.txt"
@@ -38,7 +39,7 @@ def main():
     g, url, errors = fetch_osm_berths(cfg)
     print(f"checked {datetime.now(timezone.utc):%Y-%m-%d %H:%M UTC} source {url}; failed before success: {errors or 'none'}")
     saved, sha = fetch_osm_berths.last
-    print(f"raw response saved (gitignored): {saved.relative_to(RAW_DIR.parents[2]).as_posix()} sha256 {sha}")
+    print(f"raw response saved (gitignored): DATA_ROOT/{saved.relative_to(DATA).as_posix()} sha256 {sha}")
     print(f"patch (lon/lat, from config harbour_gap_patch, gate_proxy V7): {patch}")
     pp = gpd.GeoSeries([box(*patch)], crs="EPSG:4326").to_crs(cfg["crs"]["distance"]).iloc[0]
     g["DIST_PATCH_M"] = g.distance(pp).round(0)

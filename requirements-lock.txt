@@ -1,0 +1,9 @@
+# Exact versions used for scripts/s0 and tests/ (pip freeze subset of direct imports).
+# Python 3.12.10 on Windows; generated 2026-10-12. Install: pip install -r requirements-lock.txt
+geopandas==1.1.4
+numpy==2.5.1
+pandas==3.0.5
+pyogrio==0.13.0
+pyproj==3.7.2
+pytest==9.1.1
+shapely==2.1.2
