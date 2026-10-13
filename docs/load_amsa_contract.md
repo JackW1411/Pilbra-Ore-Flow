@@ -52,3 +52,9 @@ load_amsa must not: turn zero `length`/`beam`/`draught` into NaN or judge them i
 5. Can a file contain rows from a neighbouring month? (X2)
 6. Should load accept zips directly, or only extracted shapefiles? (X6)
 7. Does load return one frame for many files, or one per file? (X3)
+
+## Open questions parked for `clean` (2026-10-13, Jack)
+Not load_amsa work; no probe run. Recorded so they are not lost.
+C1. Same craft_id + timestamp but not identical rows (Jul 1, Aug 3; F5): which columns differ, and which row clean keeps. [Unverified]
+C2. Negative craft_id coverage in the CRAFT_ID stability test: negative IDs exist (Jul 30,383 rows, Aug 26,515; F1), but whether any of the 112 boundary pairs (P13) had a negative ID was not checked. [Unverified]
+C3. Draught 25.5 rows (AIS "25.5 m or more" code; Jul 129, Aug 0; F3): treatment in clean (value, flag, or NaN) undecided. [Unverified]
