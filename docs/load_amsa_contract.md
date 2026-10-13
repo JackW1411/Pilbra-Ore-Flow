@@ -1,6 +1,6 @@
 # load_amsa contract (design only, nothing decided)
 
-Scope: read AMSA CTS sub-area point files (`ct_nw_MM_YYYY_pt.shp` under `DATA_ROOT/raw`) into one frame. R1-R7 decided 2026-10-13 (Jack adopted the Recommendation column). All other rows remain **DECISION: Jack**. Evidence tags: `P#` = `scripts/s0/output/probe_s0.txt`; `F#` = `scripts/s0/output/probe_format.txt`; fixtures = `tests/synthetic.py`; config = `config/project.toml`.
+Scope: read AMSA CTS sub-area point files (`ct_nw_MM_YYYY_pt.shp` under `DATA_ROOT/raw`) into one frame. R1-R7 and X1 decided 2026-10-13 (Jack adopted the Recommendation column). All other rows remain **DECISION: Jack**. Evidence tags: `P#` = `scripts/s0/output/probe_s0.txt`; `F#` = `scripts/s0/output/probe_format.txt`; fixtures = `tests/synthetic.py`; config = `config/project.toml`.
 **Evidence base: only July and August 2026 NW files were inspected. 2014-2025 is [Unverified].**
 
 Known facts used: fields `craft_id, longitude, latitude, course, speed, type, length, beam, draught, timestamp`; float64 except `type`, `timestamp` (str); EPSG:4326; Jul 892,212 / Aug 992,794 rows (P1) [High]. Timestamp is `dd/mm/yyyy HH:MM:SS` 24-hour plus a redundant AM/PM tag; parsing as 12-hour (as the metadata says) silently drops ~49% of rows; 0 tag/hour conflicts in both months (P2) [High]. UTC per metadata; heuristic agrees (P3) [Unverified]. The metadata's field list is wrong in names and types (STATUS.md) [High].
@@ -36,7 +36,7 @@ load_amsa must not: turn zero `length`/`beam`/`draught` into NaN or judge them i
 
 | # | Recommendation | Alternative | Why | Cost if wrong | |
 |---|---|---|---|---|---|
-| X1 duplicate rows | Keep; report count of exact duplicates | Drop exact duplicates in load | Exact duplicates: Jul 0, Aug 1; same craft_id + timestamp: Jul 1, Aug 3 (F5) [High]; `edge_rows()` has one | Dropping in load hides a data-quality signal; keeping inflates counts if clean forgets | DECISION: Jack |
+| X1 duplicate rows | Keep; report count of exact duplicates | Drop exact duplicates in load | Exact duplicates: Jul 0, Aug 1; same craft_id + timestamp: Jul 1, Aug 3 (F5) [High]; `edge_rows()` has one | Dropping in load hides a data-quality signal; keeping inflates counts if clean forgets | **DECIDED 2026-10-13 (Jack): Recommendation** |
 | X2 rows outside the file's UTC month | Raise, with file, count and range | Keep and tag with `source_file` | Jul/Aug 2026 files hold only their own UTC month (P1 TS ranges) [High]; other years [Unverified] | Raising may block files with legitimate edge rows | DECISION: Jack |
 | X3 calls straddling two files | Accept a list of files and concatenate; no cross-file dedup; `source_file` kept | One file per call | Calls cross month ends (fixture `month_boundary_call`; S0 found 34-37 calls with no observed crossing at data edges, V2) [High] | Per-file loading truncates calls | DECISION: Jack |
 | X4 empty or zero-row file | Return an empty frame with the full schema and dtypes, plus a warning | Raise | Lets month loops run | An empty AMSA file may mean a failed extract; never observed [Unverified] | DECISION: Jack |
