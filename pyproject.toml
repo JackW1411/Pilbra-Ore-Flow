@@ -1,0 +1,9 @@
+[project]
+name = "pilbara-oreflow"
+version = "0.1.0"
+description = "Estimate Port Hedland iron ore export tonnes from AMSA AIS departure draught"
+requires-python = ">=3.12"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src", "tests"]

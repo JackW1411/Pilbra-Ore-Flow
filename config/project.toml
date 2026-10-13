@@ -1,7 +1,7 @@
 # Project configuration. Read by scripts/s0/*; later by src/pilbara_oreflow/config.
 
 # Single data-location setting. Absolute path, or relative to the repo root. Holds raw/, interim/, raw/osm/.
-# Outside OneDrive since 2026-10-12. The old repo-local data/ copy is kept until Jack approves removal.
+# Outside OneDrive since 2026-10-12; the old repo-local data/ copy was deleted 2026-10-12 at Jack's request.
 DATA_ROOT = "D:/ore-flow-data"
 
 [crs]
@@ -41,3 +41,37 @@ buffers_m = [-2000, -1000, -500, 0, 500, 1000, 2000]   # polygon sensitivity vs 
 # Harbour patch outside the unbuffered polygon holding stationary pings (gate_proxy V7, first measured 2026-10-12):
 harbour_gap_patch = [118.5838, -20.3274, 118.5866, -20.3240]   # lon_min, lat_min, lon_max, lat_max (EPSG:4326)
 # implausible_above_m: not set. Handbook §4.6/§4.8/§7.21 state no maximum sailing draught (DUKC per vessel).
+
+# ---------------------------------------------------------------- pipeline (src/pilbara_oreflow), decided 2026-10-13
+# Decisions marked "Claude, delegated" were made under Jack's explicit delegation; see status.md log.
+
+[model]
+eligible_type_class = "cargo"           # modal TYPE_CLASS per craft_id (S0 P8)
+min_length_m = 150                      # S0 proxy eligibility (P8, gate_proxy)
+size_class_edges_m = [150, 260, 310, 460]   # from modal-length clusters (P10): <260 mixed, 260-310 Capesize/Newcastlemax, 310+ VLOC
+size_class_names = ["small", "cape", "vloc"]
+max_plausible_length_m = 460            # longest ships ever built ~458 m [Med]; above -> unclassified_size (F3 saw 708 m)
+max_plausible_beam_m = 75               # largest beams ~69 m [Med]; above -> unclassified_size (F3 saw 96 m)
+draught_resolution_m = 0.1              # all positive draughts on a 0.1 m grid (gate_proxy V3)
+draught_code_max_m = 25.5               # AIS "25.5 m or more" code -> NaN + implausible (contract C3)
+seawater_density = 1.025                # Fixed decision formula constant
+
+[calls]
+# Provisional until derived from the calibration month (S2) and frozen before S3. Must stay inside
+# tests/synthetic.py ASSUMED_RANGES or the synthetic truths no longer hold.
+sog_stationary_kn = 0.5                 # SOG below this = stationary (synthetic range 0.3-5)
+merge_gap_h = 2.0                       # G: inside runs separated by < G outside are one call (> 1.0)
+d_min_h = 6.0                           # D_min: loader dwell needed for a laden departure (1-30)
+t_max_h = 6.0                           # T_max: exit within this of the final loader dwell end (> 1.5)
+reentry_x_h = 4.0                       # X: no re-entry within this after exit (2-6)
+crossing_gap_min = 60                   # inside/outside gap at a crossing above this -> ais_gap (< 180)
+final_dwell_min_h = 0.5                 # stationary runs shorter than this are ignored for rule (b)
+berth_buffer_m = 100                    # berth polygons buffered for dwell assignment
+berth_inside_frac = 0.8                 # share of a dwell's pings inside a buffered berth to assign it
+status = "provisional (S1 defaults)"
+
+[tonnage]
+# light_departure: departure draught below the per-class threshold (m). Provisional; derived in S2 from the
+# calibration month as the midpoint of median arrival and median departure draught of laden calls, then frozen.
+light_departure_m = [11.0, 12.0, 13.0]  # aligned with model.size_class_names
+light_departure_status = "provisional (S1 defaults)"

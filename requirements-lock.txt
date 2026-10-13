@@ -2,7 +2,9 @@
 # Covers the direct third-party imports of scripts/s0 and tests/ at the versions installed when generated.
 # Python version: 3.12.10 (CPython, 64-bit, Windows 10). Generated 2026-10-12.
 # Install: python -m pip install -r requirements-lock.txt
+folium==0.20.0
 geopandas==1.1.4
+matplotlib==3.11.1
 numpy==2.5.1
 pandas==3.0.5
 pyogrio==0.13.0

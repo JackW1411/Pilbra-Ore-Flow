@@ -345,6 +345,13 @@ def edge_rows() -> pd.DataFrame:
     return df.iloc[::-1].reset_index(drop=True)                                   # reverse order: unsorted
 
 
+def fractional_seconds_row() -> pd.DataFrame:
+    """A timestamp with milliseconds, as found in 3 real Jul 2026 rows (e.g. '03/07/2026 15:15:00.555 PM')."""
+    df = edge_rows().iloc[:1].copy()
+    df["timestamp"] = "15/08/2026 15:15:00.555 PM"
+    return df
+
+
 def conflicting_suffix_row() -> pd.DataFrame:
     """A row whose suffix contradicts the hour. Never observed in Jul/Aug 2026 (S0 P2: 0 conflicts).
     What load_amsa should do with it is Jack's decision; the fixture only supplies the case."""
