@@ -56,7 +56,6 @@ Fails only the last test -> ship the call-count version and say so. Timebox: 4 w
 - [Unverified] OSM berth polygon accuracy (boxes ~300 m; pair-internal identity, e.g. A vs B = NPA vs NPB, not determined). Mapping in config `[berths.terminal]`.
 - Cape Lambert jurisdiction and whether PPA publishes its throughput (the "no PPA validation" claim is unverified).
 - Definition of "laden departure" for the coverage denominator (no draught). Implemented provisionally in `calls.py` (docs/laden_departure.md, logged 2026-10-16); `[calls]` parameters must be derived from the calibration month and frozen before S3.
-- Definition of "monthly error": per-month absolute % error, and how many held-out months are required.
 
 ## Repo layout
 `src/pilbara_oreflow/`: `config`, `load_amsa`, `clean`, `calls`, `tonnage`, `viz`; `run` at entry.
