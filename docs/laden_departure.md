@@ -1,6 +1,6 @@
-# Laden departure: working hypothesis (not adopted)
+# Laden departure: working definition (provisional)
 
-Status: hypothesis to test in S0. Proposed by Jack on 2026-10-12. No draught is used anywhere in the definition.
+Status: implemented in `src/pilbara_oreflow/calls.py` (Claude, delegated, logged 2026-10-16). Parameters in config `[calls]` are provisional until derived from the calibration month and frozen before S3. Proposed by Jack on 2026-10-12. No draught is used anywhere in the definition.
 
 ## Probe facts this depends on (see STATUS.md for sources)
 - There is no SUBTYPE and no IMO field, and TYPE has no bulk-carrier value. **Berth geometry is the only type filter.**

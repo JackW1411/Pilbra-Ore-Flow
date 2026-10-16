@@ -65,6 +65,7 @@ d_min_h = 6.0                           # D_min: loader dwell needed for a laden
 t_max_h = 6.0                           # T_max: exit within this of the final loader dwell end (> 1.5)
 reentry_x_h = 4.0                       # X: no re-entry within this after exit (2-6)
 crossing_gap_min = 60                   # inside/outside gap at a crossing above this -> ais_gap (< 180)
+dwell_max_interval_min = 60             # dwell time counts only ping intervals <= this (AMSA NW thinning ~15 min)
 final_dwell_min_h = 0.5                 # stationary runs shorter than this are ignored for rule (b)
 berth_buffer_m = 100                    # berth polygons buffered for dwell assignment
 berth_inside_frac = 0.8                 # share of a dwell's pings inside a buffered berth to assign it
