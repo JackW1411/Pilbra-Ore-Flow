@@ -76,3 +76,38 @@ status = "provisional (S1 defaults)"
 # calibration month as the midpoint of median arrival and median departure draught of laden calls, then frozen.
 light_departure_m = [11.0, 12.0, 13.0]  # aligned with model.size_class_names
 light_departure_status = "provisional (S1 defaults)"
+
+[berths]
+# Berth polygons: OSM seamark:type=berth ways (ODbL), raw Overpass response saved 2026-10-12 (osm_base
+# 2026-10-12T08:25:30Z, sha256 2026e173c0c189bd...). Polygon accuracy [Unverified]; polygons are boxes ~300 m long.
+# Roles from the PPA Port Hedland handbook A941965 (sha256 b71bebcf..., re-read 2026-10-16) §6.13-6.23 "Utilisation".
+# OSM letters are NOT handbook names: each OSM polygon was matched to a handbook section by long-axis bearing
+# (EPSG:7850 grid, within 2 deg of the handbook berth alignment) and by OSM name for AP/SP/PH. Within a pair
+# (e.g. A/B = NPA/NPB) which polygon is which berth is not determined. Decided 2026-10-16 (Claude, delegated).
+osm_file = "raw/osm/osm_berths_20261012T082713Z.json"   # relative to DATA_ROOT
+loader_names = ["A", "B", "C", "D", "E", "F", "G", "H", "AP1", "AP2", "AP3", "AP4", "AP5", "SP1", "SP2", "PH 4"]
+# PH4 (Utah Point, §6.16): "Bulk commodities"; loader rates given for manganese, iron ore and spodumene.
+# Its laden departures may not be iron ore; treatment in iron-ore totals is part of the matching pre-registration.
+multi_user_names = ["PH 4"]
+
+[berths.terminal]
+# OSM name -> handbook berth pair (section). Bearing in EPSG:7850 grid vs handbook alignment.
+"A" = "BHP Nelson Point NPA/NPB (6.17; 117.0 vs 117-297)"
+"B" = "BHP Nelson Point NPA/NPB (6.17; 117.0 vs 117-297)"
+"E" = "BHP Nelson Point NPC/NPD (6.18; 142.9 vs 322-142)"
+"F" = "BHP Nelson Point NPC/NPD (6.18; 142.9 vs 322-142)"
+"G" = "BHP Finucane Island FIA/FIB (6.19; 177.9 vs 358-178)"
+"H" = "BHP Finucane Island FIA/FIB (6.19; 177.9 vs 358-178)"
+"C" = "BHP Finucane Island FIC/FID (6.20; 18.6 vs 018-198)"
+"D" = "BHP Finucane Island FIC/FID (6.20; 18.6 vs 018-198)"
+"AP1" = "FMG Anderson Point AP1-AP3 (6.21; 125.0 vs 305-125)"
+"AP2" = "FMG Anderson Point AP1-AP3 (6.21; 125.0 vs 305-125)"
+"AP3" = "FMG Anderson Point AP1-AP3 (6.21; 125.0 vs 305-125)"
+"AP4" = "FMG Anderson Point AP4/AP5 (6.22; 37.9 vs 036-216)"
+"AP5" = "FMG Anderson Point AP4/AP5 (6.22; 37.4 vs 036-216)"
+"SP1" = "Roy Hill SP1/SP2 (6.23; 37.1 vs 216-036)"
+"SP2" = "Roy Hill SP1/SP2 (6.23; 37.1 vs 216-036)"
+"PH 1" = "PPA PH1 general cargo (6.13; 168.0 vs 348-168)"
+"PH 2" = "PPA PH2 general cargo (6.14; 167.9 vs 348-168)"
+"PH 3" = "PPA PH3 salt/tankers (6.15; 117.3 vs 297-117)"
+"PH 4" = "PPA PH4 Utah Point bulk, multi-commodity (6.16; 174.9 vs 355-175)"

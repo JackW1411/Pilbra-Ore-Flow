@@ -46,6 +46,7 @@ def load_berths(cfg: dict) -> gpd.GeoDataFrame:
             continue
         role = "loader" if name in bc["loader_names"] else "other"
         rows.append({"name": name, "role": role, "multi_user": name in bc.get("multi_user_names", []),
+                     "terminal": bc.get("terminal", {}).get(name),
                      "geometry": Polygon([(n["lon"], n["lat"]) for n in e["geometry"]])})
     missing = set(bc["loader_names"]) - {r["name"] for r in rows}
     if missing:

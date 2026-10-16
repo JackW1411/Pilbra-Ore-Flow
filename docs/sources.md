@@ -6,7 +6,7 @@ Retrieval dates are UTC dates of the fetch. Files marked "not committed" live un
 - URL: https://www.pilbaraports.com.au/about-pilbara-ports/publications/forms-and-publications/forms-and-publications/handbook/2025/september/port-of-port-hedland-port-handbook (the URL serves the PDF directly; the site blocks non-browser clients, so it was fetched in Chrome)
 - Version stated on the cover: none. The cover shows only the title and document number **A941965**. The §1 amendment table lists version 1 (Harbour Master, August 2025). Inner page headers carry A222193 and "of 88" against 89 actual pages.
 - PDF metadata: CreationDate/ModDate 2026-09-10 06:56:25Z, producer PDFTron office converter, PDF 1.4, 89 pages.
-- Retrieved: 2026-10-12
+- Retrieved: 2026-10-12; re-read 2026-10-16 in Chrome for §6.13-6.24 berth roles (same size and sha256)
 - Size: 4,576,408 bytes
 - sha256: `b71bebcf7daf811a32203fee833b226d6f83ce795cf8270ae606ec8322759a37` (identical across two fetches 3 s apart)
 - PDF not committed; not stored on disk.
