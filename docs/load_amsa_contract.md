@@ -66,3 +66,19 @@ C3. Draught 25.5 rows (AIS "25.5 m or more" code; Jul 129, Aug 0; F3): treatment
 
 ### Amendment 2026-10-13: fractional seconds (E1)
 Running load_amsa on the real files raised E1 on 3 July 2026 timestamps with milliseconds (e.g. `03/07/2026 15:15:00.555 PM`); August has none. S0's 19-character parse had truncated them silently. Decision (Claude, delegated): accept an optional `.fff` part and parse it at full precision; the count is reported in `attrs["report"]`. Every other non-matching string still raises. Fixture: `synthetic.fractional_seconds_row()`.
+
+## Amendment 2026-10-16: legacy schema (Claude, delegated)
+Found when Mar-May 2026 were downloaded (files `cts_nw_MM_YYYY_pt.shp`). Accepted as a second known schema; any other
+departure still raises.
+- Fields `CRAFT_ID, LON, LAT, COURSE, SPEED, TYPE, SUBTYPE, LENGTH, BEAM, DRAUGHT, TIMESTAMP`, mapped by name to the
+  contract fields. `LENGTH`/`BEAM` are int32, cast to float64 (R2). `SUBTYPE` was empty in all 2,315,348 Mar-May rows;
+  it is dropped only if empty, otherwise E0.
+- `TIMESTAMP` is a true 12-hour clock without leading zeros (`3/03/2026 8:34:06 PM`; hours 1-12 in all three files),
+  parsed with `%I ... %p`. Rows at exactly midnight carry the date only (Mar 2, Apr 3, May 1); parsed as 00:00:00,
+  raw string kept, count in `attrs["report"]["date_only_midnight_rows"]`. Evidence: 0 literal `12:00:00 AM` rows in
+  Mar-May, while current files have 1-7 literal `00:00:00` rows per month.
+- Clock basis: same as the current files. Stationary vessels in the Hedland box have a median gap of 13.5 min across
+  the May (legacy) -> Jun (current) file boundary, 15.0 min for Apr -> May and Jun -> Jul, and no negative gaps.
+  An 8 h offset would show as ~480 min. UTC itself remains [Unverified] as before.
+- File name prefix must match the schema (`cts_` legacy, `ct_` current); E4 header drift is checked within a schema.
+

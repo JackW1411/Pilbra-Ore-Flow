@@ -147,3 +147,60 @@ def test_unrecognised_file_name_raises(tmp_path, amsa_edge_rows):
     p = _write(amsa_edge_rows, tmp_path / "cts_nw_08_2026_pt.shp")                             # metadata's wrong prefix
     with pytest.raises(AmsaFormatError, match="file name"):
         load_amsa(p)
+
+
+# ---------------------------------------------------------------- legacy schema (Mar-May 2026 cts_nw_ files)
+def _legacy_rows(subtype=None):
+    ts = ["3/03/2026 12:03:05 AM", "3/03/2026 12:45:00 PM", "13/03/2026 1:32:38 PM", "31/03/2026 11:59:59 PM"]
+    return pd.DataFrame({"CRAFT_ID": [1.0, 1.0, 2.0, 2.0], "LON": 118.57, "LAT": -20.31, "COURSE": 0.0, "SPEED": 0.1,
+                         "TYPE": "Cargo ship - All", "SUBTYPE": subtype, "LENGTH": pd.array([292] * 4, dtype="int32"),
+                         "BEAM": pd.array([45] * 4, dtype="int32"), "DRAUGHT": 17.6, "TIMESTAMP": ts})
+
+
+def _write_legacy(df, path):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    g = gpd.GeoDataFrame(df, geometry=gpd.points_from_xy(df.LON, df.LAT), crs="EPSG:4326")
+    g.to_file(path, driver="ESRI Shapefile", engine="pyogrio")
+    return path
+
+
+def test_legacy_schema_maps_names_and_parses_12_hour_clock(tmp_path):
+    p = _write_legacy(_legacy_rows(), tmp_path / "cts_nw_03_2026_pt.shp")
+    df = load_amsa(p)
+    assert list(df.columns) == FIELDS + ["timestamp_utc", "source_file"]
+    assert df.length.dtype == "float64" and df.length.iloc[0] == 292.0
+    got = df.timestamp_utc.dt.strftime("%Y-%m-%d %H:%M:%S").tolist()
+    assert got == ["2026-03-03 00:03:05", "2026-03-03 12:45:00", "2026-03-13 13:32:38", "2026-03-31 23:59:59"]
+    assert df.timestamp.iloc[0] == "3/03/2026 12:03:05 AM"                     # raw string kept
+    assert df.attrs["report"]["schema_per_file"] == {p.name: "legacy"}
+
+
+def test_legacy_nonempty_subtype_raises(tmp_path):
+    p = _write_legacy(_legacy_rows(subtype="Bulk carrier"), tmp_path / "cts_nw_03_2026_pt.shp")
+    with pytest.raises(AmsaFormatError, match="SUBTYPE"):
+        load_amsa(p)
+
+
+def test_legacy_schema_under_current_prefix_raises(tmp_path):
+    p = _write_legacy(_legacy_rows(), tmp_path / "ct_nw_03_2026_pt.shp")
+    with pytest.raises(AmsaFormatError, match="prefix"):
+        load_amsa(p)
+
+
+def test_mixed_schemas_load_together(tmp_path, amsa_edge_rows):
+    leg = _write_legacy(_legacy_rows(), tmp_path / "a" / "cts_nw_03_2026_pt.shp")
+    rows = amsa_edge_rows[amsa_edge_rows.timestamp.str.slice(3, 10) == "08/2026"]
+    cur = _write(rows, tmp_path / "b" / "ct_nw_08_2026_pt.shp")
+    assert [f.name for f in find_files(tmp_path)] == [leg.name, cur.name]
+    df = load_amsa([leg, cur])
+    assert set(df.attrs["report"]["schema_per_file"].values()) == {"legacy", "current"}
+
+
+def test_legacy_date_only_is_midnight_and_counted(tmp_path):
+    rows = _legacy_rows()
+    rows.loc[2, "TIMESTAMP"] = "13/03/2026"
+    p = _write_legacy(rows, tmp_path / "cts_nw_03_2026_pt.shp")
+    df = load_amsa(p)
+    assert df.timestamp_utc.iloc[2] == pd.Timestamp("2026-03-13 00:00:00", tz="UTC")
+    assert df.timestamp.iloc[2] == "13/03/2026"
+    assert df.attrs["report"]["date_only_midnight_rows"] == {p.name: 1}

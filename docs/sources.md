@@ -20,6 +20,12 @@ Retrieval dates are UTC dates of the fetch. Files marked "not committed" live un
 |---|---|---|
 | `data/raw/amsa_subareas_2026_07.zip` | 74,640,457 | `3872e5b31088c64c254da4a3a9ea767480d34d8657b8613e2eca822383fa7a10` |
 | `data/raw/amsa_subareas_2026_08.zip` | 79,029,621 | `ce989daf194fd554389fef56406851006234f10f347337f395571a6c94e213f6` |
+| `DATA_ROOT/raw/amsa_subareas_2026_03.zip` | 54,665,750 | `68fb196713e8072e416d82355ef0b28e4d7a9f474c1a970effa9e2ff2956db5b` |
+| `DATA_ROOT/raw/amsa_subareas_2026_04.zip` | 52,209,655 | `3003b376f1b6a6b04a25b82ffcebcbd7b5f9a13415c7fca33372581f810f8ddc` |
+| `DATA_ROOT/raw/amsa_subareas_2026_05.zip` | 45,722,302 | `90beac105aeb4d25aa834292f312d841036fb20692b850fd19fb0b906d1fa3cd` |
+| `DATA_ROOT/raw/amsa_subareas_2026_06.zip` | 72,767,428 | `75605e74bcc0a48e18b0b1847831aa61e6334403ea4fb66b803941ad3a73f274` |
+
+Mar-Jun 2026 retrieved 2026-10-16 by `scripts/s2/fetch_amsa.py` (contentItemIds 6410, 6450, 6490, 6530; download form submitted with TermsAccepted=true, approved by Jack 2026-10-16). Metadata PDFs saved alongside in `sub_2026_MM/`. Mar-May NW files are named `cts_nw_*` and use an older schema (see docs/load_amsa_contract.md, legacy schema).
 
 ## SLIP LGATE-243 Port Authorities (working port limit)
 - Service: https://public-services.slip.wa.gov.au/public/rest/services/SLIP_Public_Services/Boundaries/MapServer/12, objectid 12 "PORT HEDLAND PORT AUTHORITY", requested as GeoJSON with outSR 7844 (GDA2020).
