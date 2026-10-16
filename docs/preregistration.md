@@ -81,3 +81,11 @@ Concentrate**, the commodities loaded at the 16 loader berths (handbook A941965 
 excluded because their loading berth is [Unverified]. The fit target for a group is the export tonnes of those three
 commodities; §5's validation target stays the PPA iron-ore total. At this point only July 2026 PPA lines had been
 parsed (to check the reader against PPA's printed totals); no AIS-PPA join existed.
+
+## Amendment A2 (2026-10-16, before any PPA tonnes were joined to AIS calls)
+§4's PH4 share ("iron-ore / all tonnes over balanced groups that contain a PH4 call") is biased: those groups also
+hold other ships' iron-ore cargo, so s drifts toward the port-wide iron share (synthetic test: true 0.0, estimate 0.50).
+Replaced by a count estimator that needs no matching: under A1, manganese and spodumene are loaded only at PH4
+(handbook §6.16), so every non-iron PPA loader-commodity call in the calibration months is a PH4 call.
+**s = 1 - (sum over calibration PPA calls of their non-iron share of loader tonnes) / (AIS PH4 laden departures in the
+calibration months)**, clipped to [0, 1]. Both counts are reported. Found by tests/test_match.py on synthetic data.
