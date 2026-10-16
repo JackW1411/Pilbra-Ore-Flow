@@ -74,8 +74,8 @@ status = "provisional (S1 defaults)"
 [tonnage]
 # light_departure: departure draught below the per-class threshold (m). Provisional; derived in S2 from the
 # calibration month as the midpoint of median arrival and median departure draught of laden calls, then frozen.
-light_departure_m = [11.0, 12.0, 13.0]  # aligned with model.size_class_names
-light_departure_status = "provisional (S1 defaults)"
+light_departure_m = [11.1, 13.3, 14.1]  # aligned with model.size_class_names (small, cape, vloc)
+light_departure_status = "frozen 2026-10-16: calibration Jun+Jul 2026 laden departures (n 32/414/68), median in/out draught small 7.65/14.60, cape 8.70/17.90, vloc 10.40/17.85 m; docs/preregistration.md s2"
 
 [berths]
 # Berth polygons: OSM seamark:type=berth ways (ODbL), raw Overpass response saved 2026-10-12 (osm_base

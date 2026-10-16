@@ -72,3 +72,12 @@ are logged before any fit.
 - Per-group error on balanced groups in held-out months (PPA per-call data from those months is read only after
   the S3 monthly result is logged).
 - Laden-departure count vs PPA iron-ore call count per month.
+
+## Amendment A1 (2026-10-16, before any PPA tonnes were joined to AIS calls)
+§3 said "All commodities are kept for matching". Taken literally that puts import-only calls, salt (PH3) and general
+cargo (PH1/PH2) on the PPA side, which can never be AIS laden departures (those berths are `other`), so they only
+unbalance groups. Replaced by: **PPA side = calls with export tonnes > 0 in Iron Ore, Manganese Ore or Spodumene
+Concentrate**, the commodities loaded at the 16 loader berths (handbook A941965 §6.16-6.23). Copper Concentrates are
+excluded because their loading berth is [Unverified]. The fit target for a group is the export tonnes of those three
+commodities; §5's validation target stays the PPA iron-ore total. At this point only July 2026 PPA lines had been
+parsed (to check the reader against PPA's printed totals); no AIS-PPA join existed.
