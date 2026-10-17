@@ -18,9 +18,10 @@ import pandas as pd  # noqa: E402
 COLOURS = {"laden": "#c0392b", "ballast": "#2471a3", "not_laden": "#7f8c8d", "unknown": "#d4ac0d"}
 
 
-def weekly(calls: pd.DataFrame, cargo_t: pd.Series, base_t: pd.Series, tz: str) -> pd.DataFrame:
+def weekly(calls: pd.DataFrame, cargo_t: pd.Series, base_t: pd.Series, tz: str, span=None) -> pd.DataFrame:
     """Weekly laden departures, usable count, coverage, baseline and model tonnes. model_total = usable predictions
-    + class-mean fill for flagged laden departures (same rule as tonnage.monthly), so it is comparable with baseline."""
+    + class-mean fill for flagged laden departures (same rule as tonnage.monthly), so it is comparable with baseline.
+    `span` = (first, last) UTC timestamp of the loaded AIS data; weeks not fully inside it get `partial` True."""
     laden = calls.laden_departure.fillna(False).astype(bool)
     local = calls.final_dwell_end.dt.tz_convert(tz).dt.tz_localize(None)
     df = pd.DataFrame({"week": local.dt.to_period("W-SUN").dt.start_time, "usable": calls.usable,
@@ -31,12 +32,20 @@ def weekly(calls: pd.DataFrame, cargo_t: pd.Series, base_t: pd.Series, tz: str) 
                         "model_usable_t": g.cargo_t.sum(min_count=1), "fill_t": g.fill_t.sum(min_count=1), "baseline_t": g.baseline_t.sum(min_count=1)})
     out["model_total_t"] = out[["model_usable_t", "fill_t"]].sum(axis=1, min_count=1)
     out["coverage"] = out.usable / out.laden_departures
+    out["partial"] = False
+    if span is not None:
+        lo, hi = (pd.Timestamp(s).tz_convert(tz).tz_localize(None) for s in span)
+        out["partial"] = (out.index < lo) | (out.index + pd.Timedelta(days=7) > hi)
     return out
 
 
 def weekly_chart(wk: pd.DataFrame, path: Path, title: str = "Port Hedland laden departures") -> Path:
     """Top: laden departures per week (usable vs flagged). Bottom, only if tonnes were estimated: model and baseline
-    Mt on their own axis (two panels, never a dual y-axis)."""
+    Mt on their own axis (two panels, never a dual y-axis). Partial weeks at the data edges are left out."""
+    n_partial = int(wk.get("partial", pd.Series(False, index=wk.index)).sum())
+    if n_partial:
+        wk = wk[~wk.partial]
+        title = f"{title}, full weeks only"
     tonnes = wk[["model_total_t", "baseline_t"]].notna().any(axis=None)
     fig, axes = plt.subplots(2 if tonnes else 1, 1, figsize=(10, 6.5 if tonnes else 4), sharex=True, squeeze=False)
     ax = axes[0, 0]
@@ -76,7 +85,13 @@ def call_map(pings: pd.DataFrame, calls: pd.DataFrame, port_limit_4326=None, ber
     One marker per call at the last inside ping. `pings` from clean() (longitude/latitude in EPSG:4326)."""
     c = calls[calls.eligible].sort_values("t_out").tail(max_calls)
     centre = [pings.latitude.median(), pings.longitude.median()] if len(pings) else [-20.3, 118.6]
-    m = folium.Map(location=centre, zoom_start=10, tiles="OpenStreetMap")
+    # OSM's volunteer tile servers refuse file:// pages (no referer; 403 "Access blocked", seen 2026-10-17) and
+    # folium 0.20 warns CartoDB now needs an API key. Esri World Imagery needs no key; its terms are [Unverified].
+    m = folium.Map(location=centre, zoom_start=11, tiles=None)
+    folium.TileLayer(
+        tiles="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+        attr="Imagery: Esri, Maxar, Earthstar Geographics, and the GIS User Community", name="Esri World Imagery",
+    ).add_to(m)
     if port_limit_4326 is not None:
         folium.GeoJson(port_limit_4326, name="port limit",
                        style_function=lambda _: {"fill": False, "color": "black", "weight": 1}).add_to(m)

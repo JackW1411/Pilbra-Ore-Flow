@@ -51,3 +51,14 @@ def test_counts_only_without_params(amsa_month_files, world, tmp_path):
     rep = run(amsa_month_files["2026-08"], world["port_limit"].geometry.iloc[0], world["berths"], load_config(),
               tmp_path, make_map=False)
     assert rep["tonnes"] == "none" and pd.read_csv(tmp_path / "calls.csv").cargo_t.isna().all()
+
+
+
+def test_weekly_marks_partial_edge_weeks():
+    from pilbara_oreflow.viz import weekly
+    end = pd.to_datetime(["2026-03-01 06:00", "2026-03-10 06:00", "2026-03-31 06:00"], utc=True)  # AWST Sun, Tue, Tue
+    calls = pd.DataFrame({"laden_departure": True, "usable": True, "final_dwell_end": end})
+    nan = pd.Series(float("nan"), index=calls.index)
+    wk = weekly(calls, nan, nan, "Australia/Perth",
+                span=(pd.Timestamp("2026-03-01", tz="UTC"), pd.Timestamp("2026-03-31 23:59", tz="UTC")))
+    assert wk.partial.tolist() == [True, False, True]           # w/c 23 Feb and 30 Mar run past the data

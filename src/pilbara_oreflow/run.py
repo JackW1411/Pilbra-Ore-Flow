@@ -42,7 +42,7 @@ def run(paths, port_limit, berths: gpd.GeoDataFrame, cfg: dict, out_dir: Path,
     calls["run_coverage"] = cov["coverage"]                       # every output table carries coverage
 
     calls.to_csv(out_dir / "calls.csv", index=False)
-    wk = viz.weekly(calls, cargo, base, tz)
+    wk = viz.weekly(calls, cargo, base, tz, span=(pings.timestamp_utc.min(), pings.timestamp_utc.max()))
     wk.to_csv(out_dir / "weekly.csv")
     viz.weekly_chart(wk, out_dir / "weekly.png")
     mo = tonnage.monthly(calls, cargo, base, tz)
