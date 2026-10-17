@@ -1,0 +1,14 @@
+Output of scripts/s3/ppa_monthly_totals.js, run in Chrome on the PPA Port Hedland port statistics page,
+2026-10-17. Aggregates only (no rows, no vessel names). Month = the file's own "Cargo Complete date" header.
+Cross-checks: 2026-06 equals the local parse of DATA_ROOT/raw/ppa/ppa_commodity_2026_06.pdf (288 lines,
+51,710,492 t); 2026-07 and 2026-08 equal scripts/s0/output/ppa_browser_probe.txt.
+
+month    sha256 (first 16)   iron_ore_lines  iron_ore_export_t
+2026-02  60c3cddd77762498    223             40026935.00
+2026-03  937f8bc1ddfd753f    258             46358129.00
+2026-04  40ee35dd43cf0f34    259             46275422.00
+2026-05  a35abe742cfe87f2    281             51029634.00
+2026-06  53286f7b65f7bb77    288             51710492.00
+2026-07  b82be4f348feba4a    247             44224980.00
+2026-08  14e711ab95216d2a    263             46604618.00
+2026-09  b30d87289d5dac87    271             48904062.00

@@ -1,0 +1,26 @@
+run 2026-10-17 06:40 UTC; held-out ['2026-03', '2026-04', '2026-05', '2026-08']; calls out/2026-03_2026-04_2026-05_2026-06_2026-07_2026-08/calls.csv; calibration scripts/s2/output/calibration.json (primary a3)
+[E1] coverage on laden departures by month:
+         laden  usable  coverage  coverage_excl_light
+month                                                
+2026-03    245     239    0.9755               0.9796
+2026-04    251     232    0.9243               0.9323
+2026-05    272     255    0.9375               0.9375
+2026-08    255     247    0.9686               0.9725
+[E2] a3 (K8) PRIMARY:
+         laden_departures  usable   ph4  unestimated       model_t    baseline_t  ppa_iron_ore_t  model_err  baseline_err  coverage
+month                                                                                                                              
+2026-03             245.0   239.0  15.0          0.0  4.445347e+07  4.408760e+07      46358129.0     0.0411        0.0490    0.9755
+2026-04             251.0   232.0  14.0          0.0  4.587020e+07  4.507911e+07      46275422.0     0.0088        0.0259    0.9243
+2026-05             272.0   255.0  16.0          0.0  4.985818e+07  4.894607e+07      51029634.0     0.0230        0.0408    0.9375
+2026-08             255.0   247.0  14.0          0.0  4.592131e+07  4.612274e+07      46604618.0     0.0147        0.0103    0.9686
+mean                  NaN     NaN   NaN          NaN           NaN           NaN             NaN     0.0219        0.0315    0.9515
+[E2] original (K5):
+         laden_departures  usable   ph4  unestimated       model_t    baseline_t  ppa_iron_ore_t  model_err  baseline_err  coverage
+month                                                                                                                              
+2026-03             245.0   239.0  15.0          0.0  4.355822e+07  4.344730e+07      46358129.0     0.0604        0.0628    0.9755
+2026-04             251.0   232.0  14.0          0.0  4.483159e+07  4.440961e+07      46275422.0     0.0312        0.0403    0.9243
+2026-05             272.0   255.0  16.0          0.0  4.870166e+07  4.840075e+07      51029634.0     0.0456        0.0515    0.9375
+2026-08             255.0   247.0  14.0          0.0  4.519346e+07  4.549980e+07      46604618.0     0.0303        0.0237    0.9686
+mean                  NaN     NaN   NaN          NaN           NaN           NaN             NaN     0.0419        0.0446    0.9515
+[E3] kill criteria on PRIMARY (a3): min held-out coverage 0.924; mean model err 0.0219; mean baseline err 0.0315; {"coverage_lt_60pct": false, "monthly_error_gt_10pct": false, "fails_to_beat_baseline": false}
+[E4] original (K5) for comparison: mean model err 0.0419, baseline 0.0446

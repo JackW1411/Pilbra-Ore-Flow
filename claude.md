@@ -52,10 +52,8 @@ Fails only the last test -> ship the call-count version and say so. Timebox: 4 w
 - PPA date timezone unknown: PPA dates carry no time of day and no stated timezone (Jul/Aug 2026 files). Whether PPA months are local (AWST) or UTC is [Unverified]. Basis is cargo-complete date (STATUS.md).
 - `implausible` flag: no definition. The handbook states no maximum sailing draught (§4.6, §4.8, §7.21). Do not define without a sourced rule.
 - Licences to be read by Jack before S0 closes fully: AMSA, SLIP LGATE-243, PPA statistics.
-- How PH4 (Utah Point, multi-commodity: manganese, iron ore, spodumene per handbook §6.16) laden departures enter iron-ore totals; decide in the matching pre-registration. [Unverified] whether PPA publishes a cargo/berth list.
 - [Unverified] OSM berth polygon accuracy (boxes ~300 m; pair-internal identity, e.g. A vs B = NPA vs NPB, not determined). Mapping in config `[berths.terminal]`.
 - Cape Lambert jurisdiction and whether PPA publishes its throughput (the "no PPA validation" claim is unverified).
-- Definition of "laden departure" for the coverage denominator (no draught). Implemented provisionally in `calls.py` (docs/laden_departure.md, logged 2026-10-16); `[calls]` parameters must be derived from the calibration month and frozen before S3.
 
 ## Repo layout
 `src/pilbara_oreflow/`: `config`, `load_amsa`, `clean`, `calls`, `tonnage`, `viz`; `run` at entry.
