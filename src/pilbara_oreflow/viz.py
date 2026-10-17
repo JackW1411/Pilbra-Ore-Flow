@@ -35,23 +35,27 @@ def weekly(calls: pd.DataFrame, cargo_t: pd.Series, base_t: pd.Series, tz: str) 
 
 
 def weekly_chart(wk: pd.DataFrame, path: Path, title: str = "Port Hedland laden departures") -> Path:
-    """Bars: laden departures per week (usable vs flagged). Lines: tonnes if any were estimated."""
-    fig, ax = plt.subplots(figsize=(10, 5))
+    """Top: laden departures per week (usable vs flagged). Bottom, only if tonnes were estimated: model and baseline
+    Mt on their own axis (two panels, never a dual y-axis)."""
+    tonnes = wk[["model_total_t", "baseline_t"]].notna().any(axis=None)
+    fig, axes = plt.subplots(2 if tonnes else 1, 1, figsize=(10, 6.5 if tonnes else 4), sharex=True, squeeze=False)
+    ax = axes[0, 0]
     x = np.arange(len(wk))
-    flagged = wk.laden_departures - wk.usable
-    ax.bar(x, wk.usable, color=COLOURS["laden"], label="usable departure draught")
-    ax.bar(x, flagged, bottom=wk.usable, color=COLOURS["not_laden"], label="flagged (no cargo estimate)")
+    ax.bar(x, wk.usable, color="#2a78d6", label="usable departure draught", edgecolor="white", lw=1)
+    ax.bar(x, wk.laden_departures - wk.usable, bottom=wk.usable, color="#8a8984", label="flagged (no cargo estimate)",
+           edgecolor="white", lw=1)
     ax.set_ylabel("laden departures")
-    ax.set_xticks(x, [d.strftime("%d %b") for d in wk.index], rotation=45, ha="right")
-    if wk[["model_total_t", "baseline_t"]].notna().any(axis=None):
-        ax2 = ax.twinx()
-        ax2.plot(x, wk.baseline_t / 1e6, color="black", ls="--", marker="o", label="baseline (Mt)")
-        ax2.plot(x, wk.model_total_t / 1e6, color="#1a5276", marker="s", label="draught model + class-mean fill (Mt)")
-        ax2.set_ylabel("Mt")
-        ax2.legend(loc="upper left", bbox_to_anchor=(0, -0.25), fontsize=8, ncol=2, frameon=False)
+    ax.set_ylim(0, max(wk.laden_departures.max(), 1) * 1.2)                    # headroom for the legend
+    ax.legend(loc="upper left", fontsize=8, ncol=2, frameon=False)
     cov = wk.usable.sum() / wk.laden_departures.sum() if wk.laden_departures.sum() else float("nan")
-    ax.set_title(f"{title} (coverage {cov:.0%}, {int(wk.laden_departures.sum())} laden departures)")
-    ax.legend(loc="upper left", bbox_to_anchor=(0.5, -0.25), fontsize=8, ncol=2, frameon=False)
+    ax.set_title(f"{title} (coverage {cov:.0%}, {int(wk.laden_departures.sum())} laden departures)", loc="left")
+    if tonnes:
+        ax2 = axes[1, 0]
+        ax2.plot(x, wk.model_total_t / 1e6, color="#2a78d6", marker="s", label="draught model + class-mean fill")
+        ax2.plot(x, wk.baseline_t / 1e6, color="#eb6834", ls="--", marker="^", label="baseline")
+        ax2.set_ylabel("Mt per week")
+        ax2.legend(loc="upper left", fontsize=8, ncol=2, frameon=False)
+    axes[-1, 0].set_xticks(x, [d.strftime("%d %b") for d in wk.index], rotation=45, ha="right")
     fig.tight_layout()
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)

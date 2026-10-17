@@ -56,7 +56,7 @@ Fails only the last test -> ship the call-count version and say so. Timebox: 4 w
 - Cape Lambert jurisdiction and whether PPA publishes its throughput (the "no PPA validation" claim is unverified).
 
 ## Repo layout
-`src/pilbara_oreflow/`: `config`, `load_amsa`, `clean`, `calls`, `tonnage`, `viz`; `run` at entry.
+`src/pilbara_oreflow/`: `config`, `load_amsa`, `clean`, `calls`, `tonnage`, `ppa`, `match`, `viz`; `run` at entry. Stage scripts and their outputs in `scripts/s0`-`s4`.
 `tests/` mirrors modules, synthetic data only until S1 passes. `STATUS.md` holds stage, gate results, decisions log.
 Workflow per module: I write it -> I test on synthetic data -> you review.
 
