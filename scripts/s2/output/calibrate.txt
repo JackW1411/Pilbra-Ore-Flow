@@ -1,4 +1,4 @@
-run 2026-10-17 06:36 UTC; calibration months ['2026-06', '2026-07']; calls from out/2026-03_2026-04_2026-05_2026-06_2026-07_2026-08/calls.csv
+run 2026-10-17 06:38 UTC; calibration months ['2026-06', '2026-07']; calls from out/2026-03_2026-04_2026-05_2026-06_2026-07_2026-08/calls.csv
 [C1] AIS laden departures 520 (usable 494); PPA loader-commodity calls 535 (iron-ore 522, non-iron share-weighted 13.00)
 [C2] key variants on calibration months (counts only):
          ais_in_balanced  ais_total  balanced_groups  groups     share
@@ -9,10 +9,21 @@ K3                    54        520               28     386  0.103846
 K4                    37        520               16     301  0.071154
 K5                    73        520               12     118  0.140385
 K6                    35        520               19     370  0.067308
-     chosen: K5
+K7                   197        520               22      63  0.378846
+K8                   282        520               34      62  0.542308
+K9                   169        520               20      62  0.325000
+     chosen: original K5, A3 K8
+--- original (K5)
 [C3] fit diagnostics: {"balanced_groups": 12, "ais_calls_in_balanced": 73, "groups_in_draught_fit": 9, "calls_in_draught_fit": 56, "ph4_ais_departures": 29, "non_iron_ppa_calls": 13.0}
 [C4] baseline class means (t): {"small": 56210, "cape": 183111, "vloc": 217756}
 [C5] draught model params: {"_pooled": {"a": 0.687, "b": -2295.0593, "n": 56}, "cape": {"a": 0.6843, "b": -3738.1845, "n": 48, "pooled": false}, "small": {"a": 0.687, "b": -2295.0593, "n": 4, "pooled": true}, "vloc": {"a": 0.687, "b": -2295.0593, "n": 4, "pooled": true}}
 [C6] PH4 iron-ore share s = 0.5517241379310345
 [C7] IN-SAMPLE group residuals over 9 all-usable balanced groups (diagnostic, not S3): model median |err| 3.745%, p90 12.593%, sum err -0.502%; baseline median |err| 2.930%, p90 11.749%, sum err +0.247%
      group sizes: {3: 3, 6: 1, 7: 1, 8: 2, 9: 2}
+--- a3 (K8)
+[C3] fit diagnostics: {"balanced_groups": 34, "ais_calls_in_balanced": 282, "groups_in_draught_fit": 21, "calls_in_draught_fit": 175, "ph4_ais_departures": 29, "non_iron_ppa_calls": 13.0}
+[C4] baseline class means (t): {"small": 106079, "cape": 179497, "vloc": 239097}
+[C5] draught model params: {"_pooled": {"a": 0.7524, "b": 11429.0299, "n": 175}, "small": {"a": 0.3311, "b": -73070.7561, "n": 9, "pooled": false}, "cape": {"a": 0.9682, "b": 66711.4725, "n": 142, "pooled": false}, "vloc": {"a": 1.546, "b": 277527.0144, "n": 24, "pooled": false}}
+[C6] PH4 iron-ore share s = 0.5517241379310345
+[C7] IN-SAMPLE group residuals over 21 all-usable balanced groups (diagnostic, not S3): model median |err| 0.530%, p90 1.420%, sum err +0.010%; baseline median |err| 1.544%, p90 5.097%, sum err +0.492%
+     group sizes: {4: 1, 5: 1, 6: 1, 8: 5, 9: 10, 10: 3}

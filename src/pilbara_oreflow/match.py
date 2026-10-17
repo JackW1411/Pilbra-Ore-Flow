@@ -1,6 +1,6 @@
 """AIS laden departures <-> PPA calls by date key, group-level calibration and held-out evaluation.
 
-Implements docs/preregistration.md (incl. amendments A1, A2). Calls are never paired one-to-one: within a key value the
+Implements docs/preregistration.md (incl. amendments A1-A3). Calls are never paired one-to-one: within a key value the
 AIS and PPA calls form a group, and only balanced groups (equal counts) are used. PPA tonnes enter only as fit targets
 on calibration months and as monthly totals on held-out months; DWT, GRT and vessel names never reach this module.
 """
@@ -19,6 +19,10 @@ VARIANTS = {                                                                    
     "K4": (("arrival", "departure"), "UTC"),
     "K5": (("cargo_complete", "departure"), "UTC"),
     "K6": (("arrival", "cargo_complete", "departure"), "UTC"),
+    # amendment A3: departure date only, AIS exit time shifted before taking the UTC date
+    "K7": (("departure",), "UTC", 0),
+    "K8": (("departure",), "UTC", 4),
+    "K9": (("departure",), "UTC", 8),
 }
 AIS_TIME = {"arrival": "t_in", "cargo_complete": "final_dwell_end", "departure": "t_exit"}
 
@@ -47,11 +51,12 @@ def ais_side(calls: pd.DataFrame, tz: str = "Australia/Perth") -> pd.DataFrame:
 
 
 def _key(df: pd.DataFrame, variant: str, ais: bool) -> pd.Series:
-    fields, tz = VARIANTS[variant]
+    fields, tz, *shift = VARIANTS[variant]
+    dt = pd.Timedelta(hours=shift[0] if shift else 0)
     parts = []
     for f in fields:
         if ais:
-            parts.append(df[AIS_TIME[f]].dt.tz_convert(tz).dt.strftime("%Y-%m-%d"))
+            parts.append((df[AIS_TIME[f]] + dt).dt.tz_convert(tz).dt.strftime("%Y-%m-%d"))
         else:
             parts.append(df[f].dt.strftime("%Y-%m-%d"))                # PPA: date only, zone unknown
     return pd.concat(parts, axis=1).agg("|".join, axis=1)

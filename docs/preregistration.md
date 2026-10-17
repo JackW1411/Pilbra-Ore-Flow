@@ -89,3 +89,15 @@ Replaced by a count estimator that needs no matching: under A1, manganese and sp
 (handbook §6.16), so every non-iron PPA loader-commodity call in the calibration months is a PH4 call.
 **s = 1 - (sum over calibration PPA calls of their non-iron share of loader tonnes) / (AIS PH4 laden departures in the
 calibration months)**, clipped to [0, 1]. Both counts are reported. Found by tests/test_match.py on synthetic data.
+
+## Amendment A3 (2026-10-17, decided by Jack; made AFTER in-sample calibration residuals were seen)
+Disclosure: the pre-registered rule (K5 chosen, 12 balanced groups, 73/520 calibration departures, draught fit on
+9 groups / 56 calls) was run and its in-sample group residuals were computed and seen (model median |err| 3.7%,
+baseline 2.9%; scripts/s2/output/calibrate.txt). No held-out PPA data had been read; no S3 error existed.
+Evidence for the change, from daily counts only (no tonnes), Jun 2-Jul 30 2026: PPA arrival dates do not track AIS
+port-limit entry at any shift (corr <= 0.49); PPA departure tracks AIS port-limit exit best when the exit time is
+shifted +4 h before taking the date (corr 0.90 vs 0.72 at UTC, 0.46 at AWST).
+Change: three variants are added, departure date only, AIS date = date of (t_exit + shift) in UTC:
+K7 shift 0 h, K8 shift +4 h, K9 shift +8 h. The variant is chosen among K1-K9 by the same rule as §3 (largest share of
+calibration AIS laden departures in balanced groups; counts only). Everything else in §3-§5 is unchanged.
+**A3 is primary for the S3 kill decision.** The original-rule result (K5) is reported alongside in S3.
