@@ -10,5 +10,3 @@
 
 © OpenStreetMap contributors. This data is available under the Open Database License (ODbL) 1.0:
 https://opendatacommons.org/licenses/odbl/1-0/. See https://www.openstreetmap.org/copyright.
-
-The project's MIT licence does not apply to this file.

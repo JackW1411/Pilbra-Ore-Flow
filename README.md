@@ -142,8 +142,7 @@ docs/                  write-up, pre-registration, data sources, load_amsa contr
 | PPA Port of Port Hedland port handbook (A941965) | Berth roles | Terms as published by PPA |
 | PPA monthly port statistics, commodity-type files | Calibration and evaluation only | Terms as published by PPA |
 
-Links, retrieval dates and file hashes are in `docs/sources.md` and `data/README.md`. The code is MIT-licensed
-(`LICENSE`). That licence does not cover the data.
+Links, retrieval dates and file hashes are in `docs/sources.md` and `data/README.md`.
 
 ## Attribution
 
