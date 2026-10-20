@@ -1,10 +1,11 @@
 """S4 figures for docs/writeup.md (static PNG, light mode, aggregates only).
 
-    PYTHONPATH=src python scripts/s4/figures.py
+    PYTHONPATH=src python scripts/s4/figures.py [--run RUN]
 Reads the frozen calibration, the Mar-Aug per-call CSV and the PPA monthly totals; writes docs/figures/*.png and
 prints the numbers each figure shows.
 Palette: reference categorical slots 1 (blue, model) and 2 (orange, baseline); PPA in primary ink.
 """
+import argparse
 import json
 import re
 import sys
@@ -22,7 +23,7 @@ sys.path.insert(0, str(ROOT / "src"))
 from pilbara_oreflow import match, tonnage  # noqa: E402
 from pilbara_oreflow.config import data_root, load_config  # noqa: E402
 
-RUN = "2026-03_2026-04_2026-05_2026-06_2026-07_2026-08"
+RUN = "2026-03_2026-04_2026-05_2026-06_2026-07_2026-08"   # default; override with --run (DATA_ROOT/out/<run>/)
 MONTHS = ["2026-03", "2026-04", "2026-05", "2026-06", "2026-07", "2026-08"]
 CAL = {"2026-06", "2026-07"}
 FIG = ROOT / "docs" / "figures"
@@ -34,10 +35,10 @@ plt.rcParams.update({"font.family": "DejaVu Sans", "font.size": 10, "axes.edgeco
                      "figure.facecolor": SURF, "axes.facecolor": SURF, "savefig.facecolor": SURF})
 
 
-def data():
+def data(run: str = RUN):
     cfg = load_config()
     cal = json.loads((ROOT / "scripts/s2/output/calibration.json").read_text())["a3"]
-    calls = pd.read_csv(data_root(cfg) / "out" / RUN / "calls.csv", parse_dates=["t_in", "t_out", "t_exit", "final_dwell_end"])
+    calls = pd.read_csv(data_root(cfg) / "out" / run / "calls.csv", parse_dates=["t_in", "t_out", "t_exit", "final_dwell_end"])
     calls = tonnage.flag_calls(calls, cfg)
     ais = match.ais_side(calls, cfg["aggregation"]["timezone"])
     pred, base = tonnage.predict(ais, cal["params"], cfg), tonnage.baseline(ais, cal["means"])
@@ -129,9 +130,9 @@ def fig_weekly(ais):
     return g
 
 
-def main():
+def main(run: str = RUN):
     FIG.mkdir(parents=True, exist_ok=True)
-    cfg, ais, pred, base, cal, tot = data()
+    cfg, ais, pred, base, cal, tot = data(run)
     fig_monthly(tot)
     em, eb = fig_errors(tot)
     g = fig_weekly(ais)
@@ -141,4 +142,6 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--run", default=RUN, help="run directory name under DATA_ROOT/out/")
+    main(ap.parse_args().run)

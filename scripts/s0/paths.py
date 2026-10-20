@@ -1,5 +1,7 @@
 """Repo and data locations for scripts/s0. DATA_ROOT is the single data-location setting in config/project.toml:
-an absolute path is used as is; a relative path is resolved against the repo root."""
+an absolute path is used as is; a relative path is resolved against the repo root. $ORE_FLOW_DATA_ROOT, if set,
+overrides it."""
+import os
 import tomllib
 from pathlib import Path
 
@@ -11,7 +13,7 @@ def load_config() -> dict:
 
 
 def data_root(cfg: dict | None = None) -> Path:
-    p = Path((cfg or load_config())["DATA_ROOT"])
+    p = Path(os.environ.get("ORE_FLOW_DATA_ROOT") or (cfg or load_config())["DATA_ROOT"])
     return p if p.is_absolute() else ROOT / p
 
 

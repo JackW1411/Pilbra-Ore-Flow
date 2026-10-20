@@ -4,9 +4,10 @@ Reads the per-call CSV from `pilbara_oreflow.run` and the PPA commodity PDFs for
 Chooses the key variant by counts, then fits baseline class means, the draught model and the PH4 iron share.
 Reports in-sample (calibration) group residuals as diagnostics only; no held-out month is read.
 
-    PYTHONPATH=src python scripts/s2/calibrate.py
+    PYTHONPATH=src python scripts/s2/calibrate.py [--run RUN]
 Writes scripts/s2/output/calibrate.txt (aggregates only) and DATA_ROOT/interim/calibration.json.
 """
+import argparse
 import json
 import sys
 from datetime import datetime, timezone
@@ -22,17 +23,17 @@ from pilbara_oreflow.config import data_root, load_config  # noqa: E402
 from pilbara_oreflow.ppa import read_commodity_pdf  # noqa: E402
 
 CAL = ["2026-06", "2026-07"]
-RUN = "2026-03_2026-04_2026-05_2026-06_2026-07_2026-08"
+RUN = "2026-03_2026-04_2026-05_2026-06_2026-07_2026-08"   # default; override with --run (DATA_ROOT/out/<run>/)
 OUT = ROOT / "scripts" / "s2" / "output" / "calibrate.txt"
 
 
-def main():
+def main(run: str = RUN):
     cfg = load_config()
     root = data_root(cfg)
     lines = []
-    out = [f"run {datetime.now(timezone.utc):%Y-%m-%d %H:%M UTC}; calibration months {CAL}; calls from out/{RUN}/calls.csv"]
+    out = [f"run {datetime.now(timezone.utc):%Y-%m-%d %H:%M UTC}; calibration months {CAL}; calls from out/{run}/calls.csv"]
 
-    calls = pd.read_csv(root / "out" / RUN / "calls.csv",
+    calls = pd.read_csv(root / "out" / run / "calls.csv",
                         parse_dates=["t_in", "t_out", "t_exit", "final_dwell_end"])
     ais = match.ais_side(calls, cfg["aggregation"]["timezone"])
     ais_cal = ais[ais.month.isin(CAL)].copy()
@@ -90,5 +91,7 @@ def main():
 
 
 if __name__ == "__main__":
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--run", default=RUN, help="run directory name under DATA_ROOT/out/")
     np.set_printoptions(suppress=True)
-    main()
+    main(ap.parse_args().run)

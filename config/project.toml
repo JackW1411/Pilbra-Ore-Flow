@@ -1,8 +1,8 @@
 # Project configuration. Read by scripts/s0/*; later by src/pilbara_oreflow/config.
 
 # Single data-location setting. Absolute path, or relative to the repo root. Holds raw/, interim/, raw/osm/.
-# Outside OneDrive since 2026-10-12; the old repo-local data/ copy was deleted 2026-10-12 at Jack's request.
-DATA_ROOT = "D:/ore-flow-data"
+# The environment variable ORE_FLOW_DATA_ROOT, if set, overrides this value.
+DATA_ROOT = "data"
 
 [crs]
 distance = "EPSG:7850"          # GDA2020 / MGA zone 50 (Fixed decision). All geometric tests run here.
