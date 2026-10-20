@@ -1,0 +1,4 @@
+# Keep bytes exact: shell scripts need LF, and the OSM extract must match its documented sha256.
+*.sh text eol=lf
+data/raw/osm/*.json -text
+data/raw/osm/*.query.txt -text
