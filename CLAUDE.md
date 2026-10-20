@@ -4,7 +4,7 @@ Estimate iron ore export tonnes from Pilbara ports using free AMSA AIS data and 
 Purpose: learning and portfolio credibility. Not a product.
 
 ## Session start (every session)
-1. Read `STATUS.md`. State the current stage and gate status in one line.
+1. Read `docs/STATUS.md`. State the current stage and gate status in one line.
 2. Do only work that belongs to the current stage. If asked for later-stage work, say which gate is unpassed and stop.
 3. If a request conflicts with a Fixed Decision below, push back with evidence before doing anything.
 
@@ -46,10 +46,10 @@ Stop the draught method if, on held-out data: usable-draught coverage < 60%, OR 
 Fails only the last test -> ship the call-count version and say so. Timebox: 4 weeks.
 
 ## Open items (verify, do not assume)
-- AMSA release lag (partial, see STATUS.md); PPA statistics licence/terms (AMSA licence resolved; PPA granularity resolved, see STATUS.md log).
+- AMSA release lag (partial, see docs/STATUS.md); PPA statistics licence/terms (AMSA licence resolved; PPA granularity resolved, see docs/STATUS.md log).
 - [Unverified] PPA month basis in older files: the Jan 2015 commodity file filters on departure date; 2026 files on cargo-complete date.
-- [Unverified] Port limit: working limit is SLIP LGATE-243 (adopted 2026-10-12); equivalence to handbook §4.3 and the LGATE-243 licence terms are unverified. Provisional working limit is the polygon + 500 m (closes a harbour gap; STATUS.md).
-- PPA date timezone unknown: PPA dates carry no time of day and no stated timezone (Jul/Aug 2026 files). Whether PPA months are local (AWST) or UTC is [Unverified]. Basis is cargo-complete date (STATUS.md).
+- [Unverified] Port limit: working limit is SLIP LGATE-243 (adopted 2026-10-12); equivalence to handbook §4.3 and the LGATE-243 licence terms are unverified. Provisional working limit is the polygon + 500 m (closes a harbour gap; docs/STATUS.md).
+- PPA date timezone unknown: PPA dates carry no time of day and no stated timezone (Jul/Aug 2026 files). Whether PPA months are local (AWST) or UTC is [Unverified]. Basis is cargo-complete date (docs/STATUS.md).
 - `implausible` flag: no definition. The handbook states no maximum sailing draught (§4.6, §4.8, §7.21). Do not define without a sourced rule.
 - Licences to be read by Jack before S0 closes fully: AMSA, SLIP LGATE-243, PPA statistics.
 - [Unverified] OSM berth polygon accuracy (boxes ~300 m; pair-internal identity, e.g. A vs B = NPA vs NPB, not determined). Mapping in config `[berths.terminal]`.
@@ -57,22 +57,22 @@ Fails only the last test -> ship the call-count version and say so. Timebox: 4 w
 
 ## Repo layout
 `src/pilbara_oreflow/`: `config`, `load_amsa`, `clean`, `calls`, `tonnage`, `ppa`, `match`, `viz`; `run` at entry. Stage scripts and their outputs in `scripts/s0`-`s4`.
-`tests/` mirrors modules, synthetic data only until S1 passes. `STATUS.md` holds stage, gate results, decisions log.
+`tests/` mirrors modules, synthetic data only until S1 passes. `docs/STATUS.md` holds stage, gate results, decisions log.
 Workflow per module: I write it -> I test on synthetic data -> you review.
 
 ## Conventions
 - Python, pandas/geopandas, pytest. Raw data in `data/raw/` (gitignored, never edited). Derived in `data/interim/`, `data/out/`.
 - Every output table carries flag columns and a coverage figure. NaN means unknown; 0 means measured zero.
-- When a gate result or decision is made, update `STATUS.md` and log date + evidence.
+- When a gate result or decision is made, update `docs/STATUS.md` and log date + evidence.
 
 ## Doc maintenance (agent's job, not mine)
 
-Living docs: STATUS.md, the Open items list in this file, and any brief in docs/. Each must be kept current by the agent, not left for me to remember.
+Living docs: docs/STATUS.md, the Open items list in this file, and any brief in docs/. Each must be kept current by the agent, not left for me to remember.
 
-End of every session (or after any gate result, decision or resolved open item): update the affected living docs and add a dated line to the STATUS.md decisions log. Do this without being asked.
+End of every session (or after any gate result, decision or resolved open item): update the affected living docs and add a dated line to the docs/STATUS.md decisions log. Do this without being asked.
 Update with evidence: put the source (file, query, URL, date) next to any measured value. No value without a source. Unmeasured = blank or "pending", never a guess.
 Protected sections: do NOT edit Fixed Decisions, Scope, Stage gates or Kill criteria in this file unless I explicitly tell you to in that message. If evidence suggests one should change, say so and wait. (Moving a threshold after seeing results is the failure this guards against.)
-Resolved open items: move to the STATUS.md decisions log with the answer and source, then remove from the Open items list here.
-Temp docs (scratch notes, intermediate summaries, probe output, one-off briefs): create only in scratch/ (gitignored). Delete each one as soon as it has been used. Before ending a session, list scratch/ and remove everything created that session. Anything worth keeping gets folded into STATUS.md first.
+Resolved open items: move to the docs/STATUS.md decisions log with the answer and source, then remove from the Open items list here.
+Temp docs (scratch notes, intermediate summaries, probe output, one-off briefs): create only in scratch/ (gitignored). Delete each one as soon as it has been used. Before ending a session, list scratch/ and remove everything created that session. Anything worth keeping gets folded into docs/STATUS.md first.
 Deletion limits: only delete files you created in scratch/. Never delete anything in data/raw/, src/, tests/, or any file I created. If unsure whether a file is temp, ask.
 Before ending a session, report in two lines: which living docs you updated, and which temp docs you deleted.

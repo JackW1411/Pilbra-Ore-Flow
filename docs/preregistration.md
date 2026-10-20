@@ -2,11 +2,11 @@
 
 Committed 2026-10-16, before any PPA tonnes were matched to AIS calls and before any model or baseline error was
 computed (CLAUDE.md Fixed decisions). Decided by Claude under Jack's delegation (2026-10-13). Changing anything
-here after errors are seen must be logged in STATUS.md as a deviation, with the reason, and the original result
+here after errors are seen must be logged in docs/STATUS.md as a deviation, with the reason, and the original result
 must still be reported.
 
 What was seen before this was written: PPA monthly iron-ore totals and call counts for Jul and Aug 2026
-(ppa_browser_probe.txt), and AIS laden-departure counts and coverage for Jul and Aug 2026 (STATUS.md 2026-10-16).
+(ppa_browser_probe.txt), and AIS laden-departure counts and coverage for Jul and Aug 2026 (docs/STATUS.md 2026-10-16).
 No PPA per-call tonnes have been joined to anything.
 
 ## 1. Periods
@@ -25,7 +25,7 @@ No PPA per-call tonnes have been joined to anything.
 - Size classes and the berth roles stay as configured on 2026-10-16.
 
 ## 3. Matching rule (AIS laden departure <-> PPA call)
-PPA side: the commodity-type file rows summed per (vessel, arrival date) = one PPA call (STATUS.md, PPA findings).
+PPA side: the commodity-type file rows summed per (vessel, arrival date) = one PPA call (docs/STATUS.md, PPA findings).
 All commodities are kept for matching. **Vessel name, GRT and DWT are dropped when PPA data is read and never
 stored.** Tonnes are read only after a match is fixed.
 

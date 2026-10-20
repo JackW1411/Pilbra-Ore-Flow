@@ -43,7 +43,7 @@ harbour_gap_patch = [118.5838, -20.3274, 118.5866, -20.3240]   # lon_min, lat_mi
 # implausible_above_m: not set. Handbook §4.6/§4.8/§7.21 state no maximum sailing draught (DUKC per vessel).
 
 # ---------------------------------------------------------------- pipeline (src/pilbara_oreflow), decided 2026-10-13
-# Decisions marked "Claude, delegated" were made under Jack's explicit delegation; see status.md log.
+# Decisions marked "Claude, delegated" were made under Jack's explicit delegation; see docs/STATUS.md log.
 
 [model]
 eligible_type_class = "cargo"           # modal TYPE_CLASS per craft_id (S0 P8)

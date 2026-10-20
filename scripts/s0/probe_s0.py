@@ -2,7 +2,7 @@
 
 Run from the repo root:  python scripts/s0/probe_s0.py
 Reads DATA_ROOT/raw only (config/project.toml). Writes scripts/s0/output/probe_s0.txt (same text as stdout).
-Every S0 number in STATUS.md that comes from AMSA data is printed here under a [Pn] tag.
+Every S0 number in docs/STATUS.md that comes from AMSA data is printed here under a [Pn] tag.
 """
 import re
 import sys

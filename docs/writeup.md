@@ -119,7 +119,7 @@ python -m pytest tests          # 85 tests on synthetic data
 ```
 
 PPA statistics are read in a browser (the site blocks scripted clients); see `scripts/s3/ppa_monthly_totals.js`.
-Decisions and measurements, with sources, are logged in `STATUS.md`.
+Decisions and measurements, with sources, are logged in `docs/STATUS.md`.
 
 ## Attribution
 
