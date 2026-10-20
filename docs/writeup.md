@@ -1,8 +1,5 @@
 # Estimating Port Hedland iron ore exports from free AIS data
 
-> **Draft, not for publication.** S0 closure condition 1 is open: the AMSA, SLIP LGATE-243 and PPA statistics terms
-> have not been read by the author. Publish only after that, with the attributions at the end.
-
 ## Summary
 
 Port Hedland, in Western Australia's Pilbara, exported 44-52 Mt of iron ore a month between March and August 2026
@@ -124,6 +121,6 @@ Decisions and measurements, with sources, are logged in `docs/STATUS.md`.
 ## Attribution
 
 - Vessel tracking data: Australian Maritime Safety Authority, Craft Tracking System, CC BY-NC 3.0 AU.
-- Port statistics and port handbook: Pilbara Ports Authority (terms not yet read; see draft note).
-- Port limit: Landgate SLIP LGATE-243 (terms not yet read).
+- Port statistics and port handbook: Pilbara Ports Authority.
+- Port limit: Landgate SLIP LGATE-243.
 - Berth polygons: (c) OpenStreetMap contributors, ODbL.

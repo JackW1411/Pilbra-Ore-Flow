@@ -29,7 +29,7 @@ Mar-Jun 2026 retrieved 2026-10-16 by `scripts/s2/fetch_amsa.py` (contentItemIds 
 
 ## SLIP LGATE-243 Port Authorities (working port limit)
 - Service: https://public-services.slip.wa.gov.au/public/rest/services/SLIP_Public_Services/Boundaries/MapServer/12, objectid 12 "PORT HEDLAND PORT AUTHORITY", requested as GeoJSON with outSR 7844 (GDA2020).
-- Catalogue: data.wa.gov.au package `port-authorities`. Licence "Custom (Other)", **terms not yet read**, so the geometry is not committed.
+- Catalogue: data.wa.gov.au package `port-authorities`. Licence "Custom (Other)", read by Jack, reported 2026-10-20: no restrictions found (Jack's statement in session; terms text and version not recorded here). The geometry is still not committed; `scripts/s0/fetch_port_limit.py` fetches it.
 - Retrieved: 2026-10-12 06:55 UTC by `scripts/s0/fetch_port_limit.py`. Saved to `DATA_ROOT/raw/slip_lgate243/port_hedland_port_authority.geojson` (338,091 bytes, sha256 `3274c33b0473268fe1f029632bab47ab3a450c5298d4504e2b99565369365b4b`).
 
 ## PPA Port Hedland port statistics (read only, nothing downloaded)
@@ -45,14 +45,14 @@ Recorded only from Jack's own statements. Nothing here is a summary or interpret
 ### AMSA vessel tracking data
 - Documents: https://www.operations.amsa.gov.au/spatial/DataServices/Copyright and https://www.operations.amsa.gov.au/spatial/DataServices/Disclaimer
 - Version or date: not recorded
-- Status: **not yet read by me** (Jack)
+- Status: read by Jack, reported 2026-10-20: no restrictions found (Jack's statement in session; terms text and version not recorded here)
 
 ### SLIP LGATE-243 Port Authorities
 - Catalogue page: https://catalogue.data.wa.gov.au/dataset/port-authorities (licence field "Custom (Other)"; licence document URL not identified)
 - Version or date: not recorded
-- Status: **not yet read by me** (Jack)
+- Status: read by Jack, reported 2026-10-20: no restrictions found (Jack's statement in session; terms text and version not recorded here)
 
 ### PPA port statistics
 - Terms document: not identified
 - Version or date: not recorded
-- Status: **not yet read by me** (Jack)
+- Status: read by Jack, reported 2026-10-20: no restrictions found (Jack's statement in session; terms text and version not recorded here)
