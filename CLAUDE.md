@@ -46,7 +46,8 @@ Stop the draught method if, on held-out data: usable-draught coverage < 60%, OR 
 Fails only the last test -> ship the call-count version and say so. Timebox: 4 weeks.
 
 ## Open items (verify, do not assume)
-- AMSA release lag (partial, see docs/STATUS.md). (Licences resolved 2026-10-20 and PPA granularity resolved; see docs/STATUS.md log.)
+- AMSA release lag (partial, see docs/STATUS.md). (AMSA and SLIP licences reported read 2026-10-20; PPA granularity resolved; see docs/STATUS.md log.)
+- PPA statistics reuse terms: no terms document identified; Jack unsure (2026-10-20). Decide before the repo goes public whether PPA monthly totals may be redistributed (results/ppa_monthly_totals.txt, results/evaluate.txt, results/figures/monthly_vs_ppa.png).
 - [Unverified] PPA month basis in older files: the Jan 2015 commodity file filters on departure date; 2026 files on cargo-complete date.
 - [Unverified] Port limit: working limit is SLIP LGATE-243 (adopted 2026-10-12); equivalence to handbook §4.3 is unverified. Provisional working limit is the polygon + 500 m (closes a harbour gap; docs/STATUS.md).
 - PPA date timezone unknown: PPA dates carry no time of day and no stated timezone (Jul/Aug 2026 files). Whether PPA months are local (AWST) or UTC is [Unverified]. Basis is cargo-complete date (docs/STATUS.md).

@@ -34,7 +34,7 @@ Mar-Jun 2026 retrieved 2026-10-16 by `scripts/s2/fetch_amsa.py` (contentItemIds 
 
 ## PPA Port Hedland port statistics (read only, nothing downloaded)
 - Page: https://www.pilbaraports.com.au/ports/port-of-port-hedland/about-port-of-hedland/port-statistics-reports (read in Chrome 2026-10-12)
-- Monthly PDFs, January 2015 to August 2026: "cargo by destination" and "cargo, GRT and DWT statistics by commodity type". Files read: August 2026 (both) and January 2015 (commodity). No hashes recorded because nothing was stored. Licence/terms not read.
+- Monthly PDFs, January 2015 to August 2026: "cargo by destination" and "cargo, GRT and DWT statistics by commodity type". Files read: August 2026 (both) and January 2015 (commodity). No hashes recorded because nothing was stored. Terms: see "PPA port statistics" below.
 
 ## OpenStreetMap (Overpass API)
 - https://overpass-api.de/api/interpreter, queried from 2026-10-12 06:54 UTC by `scripts/s0/osm_check.py` and `osm_nearest_berth.py` (mirrors as fallback). Committed outputs hold tags, counts, names and distances only. From 2026-10-12 08:26 UTC every raw response (incl. berth geometry) and its query are saved to `DATA_ROOT/raw/osm/` (gitignored); each output records file, sha256 and the mirror's `osm_base` timestamp. Data (c) OpenStreetMap contributors, ODbL.
@@ -55,4 +55,4 @@ Recorded only from Jack's own statements. Nothing here is a summary or interpret
 ### PPA port statistics
 - Terms document: not identified
 - Version or date: not recorded
-- Status: read by Jack, reported 2026-10-20: no restrictions found (Jack's statement in session; terms text and version not recorded here)
+- Status: unresolved (2026-10-20): no PPA terms document identified; Jack unsure whether reuse terms exist. Resolve before the repo is made public: results/ppa_monthly_totals.txt, the ppa_iron_ore_t column of results/evaluate.txt and results/figures/monthly_vs_ppa.png show PPA monthly totals
