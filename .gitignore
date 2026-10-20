@@ -1,5 +1,25 @@
-data/
+# Data: everything under data/ is local and untracked, except the README and the committed OSM berth extract.
+/data/*
+!/data/README.md
+!/data/raw/
+/data/raw/*
+!/data/raw/osm/
+/data/raw/osm/*
+!/data/raw/osm/osm_berths_20261012T082713Z.json
+!/data/raw/osm/osm_berths_20261012T082713Z.query.txt
+!/data/raw/osm/NOTICE.md
+
 scratch/
+
+# Python
 __pycache__/
-*.pyc
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
 .pytest_cache/
+
+# Notebooks
+.ipynb_checkpoints/

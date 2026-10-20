@@ -3,6 +3,21 @@ name = "pilbara-oreflow"
 version = "0.1.0"
 description = "Estimate Port Hedland iron ore export tonnes from AMSA AIS departure draught"
 requires-python = ">=3.12"
+# Pinned to requirements-lock.txt (versions used for the committed results; Python 3.12.10).
+dependencies = [
+    "folium==0.20.0",
+    "geopandas==1.1.4",
+    "matplotlib==3.11.1",
+    "numpy==2.5.1",
+    "pandas==3.0.5",
+    "pdfplumber==0.11.10",
+    "pyogrio==0.13.0",
+    "pyproj==3.7.2",
+    "shapely==2.1.2",
+]
+
+[project.optional-dependencies]
+test = ["pytest==9.1.1"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

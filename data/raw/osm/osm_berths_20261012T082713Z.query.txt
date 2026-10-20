@@ -1,0 +1,2 @@
+endpoint: https://overpass-api.de/api/interpreter
+[out:json][timeout:60];way["seamark:type"="berth"](-20.42,118.35,-19.9,118.76);out geom;

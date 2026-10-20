@@ -112,7 +112,7 @@ PYTHONPATH=src python -m pilbara_oreflow.run --months 2026-03 2026-04 2026-05 20
 PYTHONPATH=src python scripts/s2/calibrate.py
 PYTHONPATH=src python scripts/s3/evaluate.py
 PYTHONPATH=src python scripts/s4/figures.py
-python -m pytest tests          # 85 tests on synthetic data
+python -m pytest tests          # synthetic data only
 ```
 
 PPA statistics are read in a browser (the site blocks scripted clients); see `scripts/s3/ppa_monthly_totals.js`.
