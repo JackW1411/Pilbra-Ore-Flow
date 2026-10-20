@@ -10,7 +10,7 @@ Also reports: draught resolution (measured), round/default-value shares, plausib
 transit breakdown. The polygon sensitivity test is scripts/s0/polygon_sensitivity.py (imports build_calls).
 
 Run from the repo root:  python scripts/s0/gate_proxy.py   (after scripts/s0/fetch_port_limit.py)
-Writes aggregates to scripts/s0/output/gate_proxy.txt (committed); per-call rows with CRAFT_IDs to
+Writes aggregates to results/s0/gate_proxy.txt (committed); per-call rows with CRAFT_IDs to
 DATA_ROOT/interim/s0_gate_proxy_calls.csv (gitignored). Parameters: config/project.toml [s0_gate_proxy].
 """
 import sys
@@ -24,7 +24,7 @@ import shapely
 from paths import DATA, load_config  # noqa: F401  (load_config re-exported for other scripts)
 from probe_s0 import MONTHS, ROOT, Tee, load, modal_positive, modal_type, type_class
 
-OUT = Path(__file__).resolve().parent / "output" / "gate_proxy.txt"
+OUT = Path(__file__).resolve().parents[2] / "results" / "s0" / "gate_proxy.txt"
 CSV = DATA / "interim" / "s0_gate_proxy_calls.csv"
 LABEL = "provisional gate proxy v2, all departures, not the S0 gate"
 EPS = 1e-6

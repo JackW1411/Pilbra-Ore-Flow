@@ -16,7 +16,7 @@ simpler baseline that ignores draught (laden departures x average cargo per size
 pre-set kill criteria. The model beats the baseline in 3 of 4 months by about one percentage point, which is too thin,
 over four months, to call draught clearly better than counting ships.
 
-![Monthly totals vs PPA](figures/monthly_vs_ppa.png)
+![Monthly totals vs PPA](../results/figures/monthly_vs_ppa.png)
 
 ## Data
 
@@ -72,12 +72,12 @@ committed before any PPA tonnes were joined to AIS (`docs/preregistration.md`).
 | Aug 2026 | 255 | 96.9% | -1.5% | -1.0% |
 | **Mean absolute** | | **95.2%** | **2.2%** | **3.2%** |
 
-![Held-out errors](figures/heldout_errors.png)
+![Held-out errors](../results/figures/heldout_errors.png)
 
 Kill criteria, set before the project started: stop if coverage < 60%, monthly error > 10%, or the model does not
 beat the baseline. None was triggered.
 
-![Weekly laden departures](figures/weekly_departures.png)
+![Weekly laden departures](../results/figures/weekly_departures.png)
 
 ## What did not go to plan, and what it means
 

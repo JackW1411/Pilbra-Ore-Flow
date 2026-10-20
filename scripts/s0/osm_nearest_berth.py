@@ -2,7 +2,7 @@
 output holds only names, OSM ids and distances.
 
 Run from the repo root:  python scripts/s0/osm_nearest_berth.py
-Writes scripts/s0/output/osm_nearest_berth.txt. The raw Overpass response and query are saved to DATA_ROOT/raw/osm/
+Writes results/s0/osm_nearest_berth.txt. The raw Overpass response and query are saved to DATA_ROOT/raw/osm/
 (gitignored) via osm_check.overpass; the output records the file and sha256.
 OSM data (c) OpenStreetMap contributors, ODbL. Mapping OSM names to handbook berths is [Unverified].
 """
@@ -18,7 +18,7 @@ from osm_check import BBOX, overpass
 from paths import DATA
 from probe_s0 import Tee
 
-OUT = Path(__file__).resolve().parent / "output" / "osm_nearest_berth.txt"
+OUT = Path(__file__).resolve().parents[2] / "results" / "s0" / "osm_nearest_berth.txt"
 
 
 def fetch_osm_berths(cfg):

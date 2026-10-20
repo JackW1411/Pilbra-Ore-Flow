@@ -1,7 +1,7 @@
 """Port-limit polygon sensitivity: buffer the UNBUFFERED SLIP polygon in EPSG:7850 and count calls.
 
 Run from the repo root:  python scripts/s0/polygon_sensitivity.py
-Writes scripts/s0/output/polygon_sensitivity.txt. Same call definition as gate_proxy.py (build_calls).
+Writes results/s0/polygon_sensitivity.txt. Same call definition as gate_proxy.py (build_calls).
 Buffers come from config [s0_gate_proxy].buffers_m. The polygon includes land; buffering moves both edges,
 only the seaward one matters. Buffers are relative to the unbuffered SLIP polygon; the working limit is +port_limit.buffer_m (config).
 """
@@ -16,7 +16,7 @@ from shapely.geometry import box
 from gate_proxy import build_calls, classify_update, load_config, load_inputs, working_limit
 from probe_s0 import Tee
 
-OUT = Path(__file__).resolve().parent / "output" / "polygon_sensitivity.txt"
+OUT = Path(__file__).resolve().parents[2] / "results" / "s0" / "polygon_sensitivity.txt"
 
 
 def main():

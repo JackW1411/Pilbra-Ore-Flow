@@ -2,7 +2,7 @@
 compressed size stated on each entry's download dialog. Reads listing and dialog pages only; downloads no data.
 
 Run from the repo root:  python scripts/s0/amsa_catalogue.py
-Writes scripts/s0/output/amsa_catalogue.txt (overwrites).
+Writes results/s0/amsa_catalogue.txt (overwrites).
 The NW area is one of three sub-areas inside each zip; its own size is not stated. "Mentions North West" is
 taken from each entry's description text.
 """
@@ -16,7 +16,7 @@ from pathlib import Path
 BASE = "https://www.operations.amsa.gov.au"
 LISTING = BASE + "/Spatial/DataServices/DigitalData"
 DIALOG = BASE + "/spatial/DataServices/Download?contentItemId={}"
-OUT = Path(__file__).resolve().parent / "output" / "amsa_catalogue.txt"
+OUT = Path(__file__).resolve().parents[2] / "results" / "s0" / "amsa_catalogue.txt"
 MONTHS = {m: i for i, m in enumerate(["January", "February", "March", "April", "May", "June", "July", "August",
                                       "September", "October", "November", "December"], 1)}
 TYPOS = {"Agust": "August", "Februrary": "February"}   # as spelled on the listing page

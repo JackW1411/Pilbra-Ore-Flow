@@ -2,7 +2,7 @@
 downloads no geometry and draws nothing.
 
 Run from the repo root:  python scripts/s0/sources_check.py
-Writes scripts/s0/output/sources_check.txt (overwrites; the file header carries the check time).
+Writes results/s0/sources_check.txt (overwrites; the file header carries the check time).
 """
 import json
 import urllib.parse
@@ -10,7 +10,7 @@ import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 
-OUT = Path(__file__).resolve().parent / "output" / "sources_check.txt"
+OUT = Path(__file__).resolve().parents[2] / "results" / "s0" / "sources_check.txt"
 SLIP_LAYER = ("https://public-services.slip.wa.gov.au/public/rest/services/"
               "SLIP_Public_Services/Boundaries/MapServer/12")
 CKAN = "https://catalogue.data.wa.gov.au/api/3/action/"

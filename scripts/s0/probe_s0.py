@@ -1,7 +1,7 @@
 """S0 feasibility probe on AMSA CTS sub-area data (NW), Jul + Aug 2026.
 
 Run from the repo root:  python scripts/s0/probe_s0.py
-Reads DATA_ROOT/raw only (config/project.toml). Writes scripts/s0/output/probe_s0.txt (same text as stdout).
+Reads DATA_ROOT/raw only (config/project.toml). Writes results/s0/probe_s0.txt (same text as stdout).
 Every S0 number in docs/STATUS.md that comes from AMSA data is printed here under a [Pn] tag.
 """
 import re
@@ -18,7 +18,7 @@ import pyogrio
 from paths import DATA, ROOT
 
 RAW = DATA / "raw"
-OUT = Path(__file__).resolve().parent / "output" / "probe_s0.txt"
+OUT = Path(__file__).resolve().parents[2] / "results" / "s0" / "probe_s0.txt"
 MONTHS = ["2026-07", "2026-08"]
 PROBE_MONTH = "2026-08"
 

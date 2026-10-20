@@ -1,9 +1,9 @@
 """S3 held-out evaluation (docs/preregistration.md §5; A3 primary, original K5 alongside).
 
-Uses only: frozen calibration (scripts/s2/output/calibration.json), the per-call CSV of the Mar-Aug run, and PPA
-monthly iron-ore totals (scripts/s3/output/ppa_monthly_totals.txt). Held-out months: Mar, Apr, May, Aug 2026.
+Uses only: frozen calibration (results/calibration.json), the per-call CSV of the Mar-Aug run, and PPA
+monthly iron-ore totals (results/ppa_monthly_totals.txt). Held-out months: Mar, Apr, May, Aug 2026.
 
-    PYTHONPATH=src python scripts/s3/evaluate.py [--run RUN]   -> scripts/s3/output/evaluate.txt
+    PYTHONPATH=src python scripts/s3/evaluate.py [--run RUN]   -> results/evaluate.txt
 """
 import argparse
 import json
@@ -21,25 +21,25 @@ from pilbara_oreflow.config import data_root, load_config  # noqa: E402
 
 HELD_OUT = ["2026-03", "2026-04", "2026-05", "2026-08"]
 RUN = "2026-03_2026-04_2026-05_2026-06_2026-07_2026-08"   # default; override with --run (DATA_ROOT/out/<run>/)
-OUT = ROOT / "scripts" / "s3" / "output" / "evaluate.txt"
+OUT = ROOT / "results" / "evaluate.txt"
 
 
 def ppa_totals() -> pd.Series:
-    rows = [l.split() for l in (ROOT / "scripts/s3/output/ppa_monthly_totals.txt").read_text().splitlines()
+    rows = [l.split() for l in (ROOT / "results/ppa_monthly_totals.txt").read_text().splitlines()
             if re.match(r"^\d{4}-\d{2}\s", l)]
     return pd.Series({r[0]: float(r[3]) for r in rows})
 
 
 def main(run: str = RUN):
     cfg = load_config()
-    cal = json.loads((ROOT / "scripts/s2/output/calibration.json").read_text())
+    cal = json.loads((ROOT / "results/calibration.json").read_text())
     calls = pd.read_csv(data_root(cfg) / "out" / run / "calls.csv",
                         parse_dates=["t_in", "t_out", "t_exit", "final_dwell_end"])
     calls = tonnage.flag_calls(calls, cfg)               # recompute flags with the frozen thresholds
     ais = match.ais_side(calls, cfg["aggregation"]["timezone"])
     ppa = ppa_totals()
     out = [f"run {datetime.now(timezone.utc):%Y-%m-%d %H:%M UTC}; held-out {HELD_OUT}; calls out/{run}/calls.csv; "
-           f"calibration scripts/s2/output/calibration.json (primary {cal['primary']})"]
+           f"calibration results/calibration.json (primary {cal['primary']})"]
 
     no_light = ais.laden_departure & ~ais[["no_draught", "static_draught", "ais_gap", "implausible"]].any(axis=1)
     cov = ais.groupby("month").agg(laden=("usable", "size"), usable=("usable", "sum"))

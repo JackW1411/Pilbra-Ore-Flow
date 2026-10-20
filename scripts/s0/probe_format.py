@@ -1,7 +1,7 @@
 """Format probe for load_amsa decisions (docs/load_amsa_contract.md). Report only.
 
 Run from the repo root:  python scripts/s0/probe_format.py
-Reads the Jul and Aug 2026 NW shapefiles from DATA_ROOT/raw (with geometry). Writes scripts/s0/output/probe_format.txt.
+Reads the Jul and Aug 2026 NW shapefiles from DATA_ROOT/raw (with geometry). Writes results/s0/probe_format.txt.
 Values are counted as read from the file: nothing is cleaned, dropped or corrected.
 
 Range limits for [F3] come from the AIS position/static message field definitions (ITU-R M.1371) as commonly
@@ -17,7 +17,7 @@ import shapely
 from probe_s0 import MONTHS, Tee, shp_path
 from pathlib import Path
 
-OUT = Path(__file__).resolve().parent / "output" / "probe_format.txt"
+OUT = Path(__file__).resolve().parents[2] / "results" / "s0" / "probe_format.txt"
 FIELDS = ["craft_id", "longitude", "latitude", "course", "speed", "type", "length", "beam", "draught", "timestamp"]
 # (field, sentinel values to count, valid min, valid max). Valid ranges exclude the sentinels.
 CHECKS = [

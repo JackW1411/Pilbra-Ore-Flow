@@ -5,7 +5,7 @@ Chooses the key variant by counts, then fits baseline class means, the draught m
 Reports in-sample (calibration) group residuals as diagnostics only; no held-out month is read.
 
     PYTHONPATH=src python scripts/s2/calibrate.py [--run RUN]
-Writes scripts/s2/output/calibrate.txt (aggregates only) and DATA_ROOT/interim/calibration.json.
+Writes results/calibrate.txt (aggregates only) and results/calibration.json (read by scripts/s3/evaluate.py).
 """
 import argparse
 import json
@@ -24,7 +24,7 @@ from pilbara_oreflow.ppa import read_commodity_pdf  # noqa: E402
 
 CAL = ["2026-06", "2026-07"]
 RUN = "2026-03_2026-04_2026-05_2026-06_2026-07_2026-08"   # default; override with --run (DATA_ROOT/out/<run>/)
-OUT = ROOT / "scripts" / "s2" / "output" / "calibrate.txt"
+OUT = ROOT / "results" / "calibrate.txt"
 
 
 def main(run: str = RUN):
@@ -83,8 +83,7 @@ def main(run: str = RUN):
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text("\n".join(out) + "\n", encoding="utf-8")
-    dest = root / "interim" / "calibration.json"
-    dest.parent.mkdir(parents=True, exist_ok=True)
+    dest = ROOT / "results" / "calibration.json"
     dest.write_text(json.dumps({"primary": "a3", **result}, indent=2), encoding="utf-8")
     print("\n".join(out))
     print(f"wrote {OUT} and {dest}")

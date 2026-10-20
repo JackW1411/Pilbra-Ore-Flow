@@ -2,7 +2,7 @@
 //   https://www.pilbaraports.com.au/ports/port-of-port-hedland/about-port-of-hedland/port-statistics-reports
 // (the site blocks non-browser clients). Paste into the devtools console; it returns a JSON object.
 // Reads the two latest "commodity type" and two latest "destination" PDFs IN MEMORY and returns AGGREGATES ONLY:
-// no vessel names, no rows. Output is copied by hand to scripts/s0/output/ppa_browser_probe.txt.
+// no vessel names, no rows. Output is copied by hand to results/s0/ppa_browser_probe.txt.
 // Uses pdf.js 3.11.174 from cdnjs.
 (async () => {
   if (!window.pdfjsLib) await new Promise((res, rej) => { const s = document.createElement('script');

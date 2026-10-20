@@ -1,7 +1,7 @@
 """List OpenStreetMap berth/pier/wharf-type features near Port Hedland. Tags and counts only in the output.
 
 Run from the repo root:  python scripts/s0/osm_check.py
-Writes scripts/s0/output/osm_check.txt (overwrites). OSM data (c) OpenStreetMap contributors, ODbL.
+Writes results/s0/osm_check.txt (overwrites). OSM data (c) OpenStreetMap contributors, ODbL.
 Every raw Overpass response is saved, with its query text, to DATA_ROOT/raw/osm/ (gitignored); path and sha256 are
 printed in the output so a run can be tied to the exact response.
 """
@@ -15,7 +15,7 @@ from pathlib import Path
 
 from paths import DATA
 
-OUT = Path(__file__).resolve().parent / "output" / "osm_check.txt"
+OUT = Path(__file__).resolve().parents[2] / "results" / "s0" / "osm_check.txt"
 RAW_DIR = DATA / "raw" / "osm"
 ENDPOINTS = ["https://overpass-api.de/api/interpreter", "https://overpass.private.coffee/api/interpreter",
              "https://overpass.kumi.systems/api/interpreter"]

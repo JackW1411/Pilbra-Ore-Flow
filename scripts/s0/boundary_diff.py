@@ -12,7 +12,7 @@ their stationary inside pings, and whether the vessel has any W call (kept or ex
 No labels are assigned.
 
 Run from the repo root:  python scripts/s0/boundary_diff.py
-Writes scripts/s0/output/boundary_diff.txt (no CRAFT_IDs).
+Writes results/s0/boundary_diff.txt (no CRAFT_IDs).
 """
 import sys
 import time
@@ -27,7 +27,7 @@ from gate_proxy import build_calls, classify_update, load_config, load_inputs, w
 from osm_nearest_berth import fetch_osm_berths
 from probe_s0 import Tee
 
-OUT = Path(__file__).resolve().parent / "output" / "boundary_diff.txt"
+OUT = Path(__file__).resolve().parents[2] / "results" / "s0" / "boundary_diff.txt"
 L_BINS = [150, 200, 260, 300, 320, 400]
 
 

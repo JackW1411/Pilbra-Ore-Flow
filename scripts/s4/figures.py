@@ -1,7 +1,7 @@
 """S4 figures for docs/writeup.md (static PNG, light mode, aggregates only).
 
     PYTHONPATH=src python scripts/s4/figures.py [--run RUN]
-Reads the frozen calibration, the Mar-Aug per-call CSV and the PPA monthly totals; writes docs/figures/*.png and
+Reads the frozen calibration, the Mar-Aug per-call CSV and the PPA monthly totals; writes results/figures/*.png and
 prints the numbers each figure shows.
 Palette: reference categorical slots 1 (blue, model) and 2 (orange, baseline); PPA in primary ink.
 """
@@ -26,7 +26,7 @@ from pilbara_oreflow.config import data_root, load_config  # noqa: E402
 RUN = "2026-03_2026-04_2026-05_2026-06_2026-07_2026-08"   # default; override with --run (DATA_ROOT/out/<run>/)
 MONTHS = ["2026-03", "2026-04", "2026-05", "2026-06", "2026-07", "2026-08"]
 CAL = {"2026-06", "2026-07"}
-FIG = ROOT / "docs" / "figures"
+FIG = ROOT / "results" / "figures"
 INK, INK2, MUTED, GRID, SURF = "#0b0b0b", "#52514e", "#8a8984", "#e6e5e1", "#fcfcfb"
 MODEL, BASE = "#2a78d6", "#eb6834"
 
@@ -37,13 +37,13 @@ plt.rcParams.update({"font.family": "DejaVu Sans", "font.size": 10, "axes.edgeco
 
 def data(run: str = RUN):
     cfg = load_config()
-    cal = json.loads((ROOT / "scripts/s2/output/calibration.json").read_text())["a3"]
+    cal = json.loads((ROOT / "results/calibration.json").read_text())["a3"]
     calls = pd.read_csv(data_root(cfg) / "out" / run / "calls.csv", parse_dates=["t_in", "t_out", "t_exit", "final_dwell_end"])
     calls = tonnage.flag_calls(calls, cfg)
     ais = match.ais_side(calls, cfg["aggregation"]["timezone"])
     pred, base = tonnage.predict(ais, cal["params"], cfg), tonnage.baseline(ais, cal["means"])
     tot = match.monthly_totals(ais, pred, base, cal["ph4_iron_share"]).reindex(MONTHS)
-    rows = [l.split() for l in (ROOT / "scripts/s3/output/ppa_monthly_totals.txt").read_text().splitlines()
+    rows = [l.split() for l in (ROOT / "results/ppa_monthly_totals.txt").read_text().splitlines()
             if re.match(r"^\d{4}-\d{2}\s", l)]
     tot["ppa"] = pd.Series({r[0]: float(r[3]) for r in rows})
     return cfg, ais, pred, base, cal, tot

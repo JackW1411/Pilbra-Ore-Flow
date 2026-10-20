@@ -1,7 +1,7 @@
 """Record which AMSA monthly sub-area datasets are listed right now, for release-lag tracking.
 
 Run from the repo root:  python scripts/s0/amsa_listing.py
-Appends one dated block to scripts/s0/output/amsa_listing.txt. Re-run on different days to bound
+Appends one dated block to results/s0/amsa_listing.txt. Re-run on different days to bound
 the listing date of each month (lag = first run that sees month M minus end of month M).
 """
 import re
@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 URL = "https://www.operations.amsa.gov.au/Spatial/DataServices/DigitalData"
-OUT = Path(__file__).resolve().parent / "output" / "amsa_listing.txt"
+OUT = Path(__file__).resolve().parents[2] / "results" / "s0" / "amsa_listing.txt"
 MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August",
           "September", "October", "November", "December"]
 

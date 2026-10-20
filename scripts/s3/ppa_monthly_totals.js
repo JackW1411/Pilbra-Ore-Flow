@@ -2,7 +2,7 @@
 // allows only one automatic download per session). Run on
 //   https://www.pilbaraports.com.au/ports/port-of-port-hedland/about-port-of-hedland/port-statistics-reports
 // Returns AGGREGATES ONLY: per file, sha256 prefix, header month, total iron-ore export tonnes and line count.
-// Row grouping as the S0 probe (text items clustered by y, 4 pt). Output copied to scripts/s3/output/ppa_monthly_totals.txt.
+// Row grouping as the S0 probe (text items clustered by y, 4 pt). Output copied to results/ppa_monthly_totals.txt.
 (async () => {
   const pdfjs = await import('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.min.mjs');
   pdfjs.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.worker.min.mjs';

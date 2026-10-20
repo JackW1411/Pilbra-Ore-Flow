@@ -23,7 +23,7 @@ path = "raw/slip_lgate243/port_hedland_port_authority.geojson"   # relative to D
 crs = "EPSG:7844"               # GDA2020 geographic, as requested from the service (outSR)
 # Provisional working limit = SLIP polygon buffered by buffer_m in EPSG:7850 (Jack, 2026-10-12). Hard cap 500 m.
 # Reason: the unbuffered polygon excludes a harbour patch where ships dwell (gate_proxy V7). Full sensitivity
-# table: scripts/s0/output/polygon_sensitivity.txt (relative to the unbuffered polygon).
+# table: results/s0/polygon_sensitivity.txt (relative to the unbuffered polygon).
 buffer_m = 500
 max_buffer_m = 500
 
