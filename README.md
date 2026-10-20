@@ -69,6 +69,20 @@ the author, so this is supporting evidence, not proof.
 - Only four held-out months. The differences between the model and the baseline (2.19% vs 3.15% mean, with the
   baseline better in August) are within what four months can distinguish. This does not show that draught is
   better than counting laden departures.
+- Both methods under-estimated in all four held-out months. Signed errors (estimate minus PPA, as a share of PPA;
+  magnitudes from the `model_err` and `baseline_err` columns of `results/evaluate.txt`, signs from `model_t` and
+  `baseline_t` against `ppa_iron_ore_t` in the same file):
+
+  | Month | Draught model | Baseline |
+  |---|---|---|
+  | Mar 2026 | -4.11% | -4.90% |
+  | Apr 2026 | -0.88% | -2.59% |
+  | May 2026 | -2.30% | -4.08% |
+  | Aug 2026 | -1.47% | -1.03% |
+
+  The shortfall is between 0.88% and 4.90% of PPA's figure, so the headline absolute errors reflect a consistent
+  downward bias, not random scatter. The cause has not been investigated. The bias was not corrected after the
+  held-out errors were seen, because the rule and the calibration/held-out split were pre-registered.
 - One port (Port Hedland) and a single commodity (iron ore). The method has not been tested at other ports.
 - No live feed was built. The pipeline uses AMSA's monthly AIS extracts, which are published after the month ends,
   so it cannot produce estimates in real time.
