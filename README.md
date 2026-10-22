@@ -129,7 +129,7 @@ scripts/reproduce.sh   end-to-end reproduction
 results/               committed outputs every number above comes from; results/s0/ holds the probe outputs
 config/project.toml    all parameters, CRS, berth roles, data location
 data/                  local data (not committed) except the OSM berth extract; see data/README.md
-docs/                  write-up, pre-registration, data sources, load_amsa contract, STATUS.md (process log)
+docs/                  write-up, pre-registration, data sources, load_amsa contract
 ```
 
 ## Data sources and licences
@@ -152,4 +152,4 @@ Links, retrieval dates and file hashes are in `docs/sources.md` and `data/README
 - Port statistics and port handbook: Pilbara Ports Authority.
 - Port limit: Landgate, SLIP LGATE-243 Port Authorities.
 
-Built with Claude Code; process log in docs/STATUS.md.
+Built with Claude Code.
