@@ -56,12 +56,12 @@ The model beats the baseline in three of the four months. With the originally pr
 the mean errors are 4.19% (model) and 4.46% (baseline) (`results/evaluate.txt`, E4).
 
 **Pre-registration and amendment A3.** The matching rule, the calibration/held-out split and the error metric were
-written down in `docs/preregistration.md` and committed (`5125050`) before any PPA tonnes were joined to AIS. The
+written down in `docs/preregistration.md` and committed (`74508cc`) before any PPA tonnes were joined to AIS. The
 original rule put only 14% of calibration-month departures into usable groups (73 of 520, `results/calibrate.txt`,
 C2). Amendment A3 changed the date key to the PPA departure date with a fixed time shift (54%, 282 of 520). It was
-made after the calibration fit and its in-sample residuals had been seen. In the commit history, A3 (`d0975e7`)
-comes after the calibration commit (`d59abc8`) and before the held-out evaluation, which `results/evaluate.txt`
-records as run at 2026-10-17 06:40 UTC and which was committed in `ee5654e`. Commit timestamps can be edited by
+made after the calibration fit and its in-sample residuals had been seen. In the commit history, A3 (`5522360`)
+comes after the calibration commit (`aa4b8c6`) and before the held-out evaluation, which `results/evaluate.txt`
+records as run at 2026-10-17 06:40 UTC and which was committed in `a7ca038`. Commit timestamps can be edited by
 the author, so this is supporting evidence, not proof.
 
 ## Limitations
